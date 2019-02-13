@@ -36,7 +36,7 @@ def begin_game():
     player_name = request.get_json()
     #game.print_test(player_name['name'])
     game_map, player, player_info = game.start_game(player_name['name'])
-    breakpoint()   
+    #breakpoint()   
     json_player_info = jsonify(player_info)
     return json_player_info 
 
