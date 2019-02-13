@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>THE GAME</title>
+</head>
+<body>
+  <header>
+    WELCOME TO THE GAME
+  </header>
+  <main>
+    <h1>THE GAME</h1>
+    HERE IS THE GAME
+    <div id="mapbox">
+    THE MAP WILL RENDER HERE, SOMEDAY.
+      <canvas id="canvas" width="600" height="400"></canvas>
+      <!-- <img src="/static/tiles.png"/> -->
+    </div>
+<div style="display:none;">
+  <img id="sprites"
+       src="/static/tiles.png">
+       <!-- width="300" height="227"> -->
+</div>
+    <form action="/start_game" method="POST" id="start">
+      <label>ENTER THY NAME:<input name="name" type="text"/></label>
+      <br>
+      <button type="submit">Start Game</button>
+    </form>
+    <button id="move">MOVE!</button>
+  </main>
+  <script src="static/js/game.js"></script>
+</body>
+</html>
