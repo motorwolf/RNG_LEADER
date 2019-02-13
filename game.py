@@ -37,6 +37,7 @@ class Player():
                     'regent': self.regent,
                     'item': self.item,
                     'canyou': ['jsonify','this?'],
+                    'yesbut': ("canyou", "jsonifythis?")
                 }
         return attr_dict
 
