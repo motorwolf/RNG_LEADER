@@ -35,10 +35,10 @@ def begin_game():
     """ Initialize the Game. """
     player_name = request.get_json()
     #game.print_test(player_name['name'])
-    game_map, player, player_info = game.start_game(player_name['name'])
-    #breakpoint()   
-    json_player_info = jsonify(player_info)
-    return json_player_info 
+    game_map, player, player_info, map_data = game.start_game(player_name['name'])
+    #breakpoint()
+    player_map_json = jsonify({**player_info, **map_data})
+    return player_map_json 
 
 if __name__ == '__main__':
     app.debug=True

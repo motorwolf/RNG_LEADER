@@ -13,7 +13,7 @@ imageBg.onload = function() {
 // window.addEventListener('keyup', (e) => {
 //   console.log(e);
 // });
-
+let gameData = {}
 gameStartForm.addEventListener('submit', (e) => {
   e.preventDefault();
   name = e.target[0].value;
@@ -28,6 +28,7 @@ gameStartForm.addEventListener('submit', (e) => {
     }).then(response => 
       response.json())
       .then(response => {
+        gameData = response;
         localStorage.setItem('gameData',JSON.stringify(response));
         console.log(response)
       });
