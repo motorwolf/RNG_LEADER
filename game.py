@@ -11,7 +11,6 @@ def start_game(name):
     player = Player(name)
     attributes = player.attribute_dict()
     map_data = game_map.map_attributes()
-    #breakpoint()
     return [game_map, player, attributes, map_data]
     
 class Player():
