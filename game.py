@@ -7,23 +7,24 @@ def print_test(stringy):
 
 def start_game(name):
     """ Create Map, Player """
-    game_map = Map(30,30)
+    game_map = Map(20,20)
     player = Player(name)
     attributes = player.attribute_dict()
-    return [game_map, player, attributes]
+    map_data = game_map.map_attributes()
+    #breakpoint()
+    return [game_map, player, attributes, map_data]
     
 class Player():
+    """ Creates a player of the game. Requires a name entry. """
     def __init__(self,name):
-        random_regent = random.choice(regents)
-        random_item = random.choice(macguffins)
         self.name = name
         self.mutation = self.generate_mutation()# determines one randomly 
         self.position = {
                 "x": None,
                 "y": None
                 }
-        self.regent = random_regent
-        self.item = random_item
+        self.regent = random.choice(regents)
+        self.item = random.choice(macguffins) #random_item
 
     def attribute_dict(self):
         """ Returns a dictionary of attributes. """
@@ -36,8 +37,6 @@ class Player():
                         },
                     'regent': self.regent,
                     'item': self.item,
-                    'canyou': ['jsonify','this?'],
-                    'yesbut': ("canyou", "jsonifythis?")
                 }
         return attr_dict
 
@@ -71,18 +70,47 @@ class Player():
         update(direction_tree[direction][0],direction_tree[direction][1])
     
 class Map():
+
     def __init__(self,length,width):
-        ### determines grid length and width and randomly determines 
         
         self.width = width # x coordinate
         self.length = length # y coordinate
         self.start_position = [math.floor(width/2), 1]
         self.win_position =  [5,length]
+        self.map_terrain = self.create_map()
+    
+    def __repr__(self):
+        return f"<Map width={self.width} length={self.length} start_pos={self.start_position} win_pos={self.win_position}>"
 
     def create_map(self):
-        """ Would output coordinates and terrain"""
-        
+        """ Outputs terrain map represented as a multi-dimensional list. """
+        totalTiles = self.length * self.width
+        treePercent = random.randrange(1,4) * 0.1
+        trees = math.floor(totalTiles * treePercent)
+        grass = totalTiles - trees
+        elements = [trees,grass]
+        terrain_map = []
+        terrain_row = []
+        while (sum(elements)) > 0:
+            print('loop ran')
+            if len(terrain_row) < self.width:
+                terrain_choice = random.randrange(0,len(elements))
+                elements[terrain_choice] -= 1
+                terrain_row.append(terrain_choice + 1)
+            else:
+                terrain_map.append(terrain_row)
+                terrain_row = []
+        terrain_map.append(terrain_row) #loop will skip last row unless it is added after if/else conditional
+        return terrain_map
 
+    def map_attributes(self):
+        """ Returns a dictionary of relevant attributes to be turned into JSON. """
+        map_dict = {
+                "start_pos": self.start_position,
+                "win_pos": self.win_position,
+                "terrain": self.map_terrain
+                }
+        return map_dict
 
     def render_map(self):
         """ The map updates to move player every turn. """
