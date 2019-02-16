@@ -37,13 +37,20 @@ class Game(db.Model):
 
     player = db.relationship("Player", backref=db.backref("game"))
     item = db.relationship("Item", backref=db.backref("game"))
+    
+    # trying to set up a non db class attribute
+
+    # @orm.reconstructor
+    # def __init__(self):
+    #     self.test = 'test' 
+    #     self.game_map = self.create_map()
 
     def __repr__(self):
         return f"""<Game id={self.game_id} player={self.player.name} regent={self.regent.name} item={self.item.name}>"""
 
-    def create_map(self):
+    def create_map(self,length,width):
         """ Outputs terrain map represented as a multi-dimensional list. """
-        totalTiles = self.length * self.width
+        totalTiles = length * width
         treePercent = random.randrange(1,4) * 0.1
         trees = math.floor(totalTiles * treePercent)
         grass = totalTiles - trees
@@ -52,7 +59,7 @@ class Game(db.Model):
         terrain_row = []
         while (sum(elements)) > 0:
             print('loop ran')
-            if len(terrain_row) < self.width:
+            if len(terrain_row) < width:
                 terrain_choice = random.randrange(0,len(elements))
                 elements[terrain_choice] -= 1
                 terrain_row.append(terrain_choice + 1)
@@ -61,15 +68,24 @@ class Game(db.Model):
                 terrain_row = []
         terrain_map.append(terrain_row) #loop will skip last row unless it is added after if/else conditional
         return terrain_map
+    
+    def assign_map_attributes(self,length,width):
+        """ Creates a map, the start position, and the win position."""
+        self.game_map = self.create_map(length,width)
+        self.start_position = [math.floor(width/2), 1]
+        self.win_position =  [5,length]
 
-    def map_attributes(self):
+    def game_attributes(self):
         """ Returns a dictionary of relevant attributes to be turned into JSON. """
-        map_dict = {
+        game_attr_dict = {
                 "start_pos": self.start_position,
                 "win_pos": self.win_position,
-                "terrain": self.map_terrain
+                "terrain": self.game_map,
+                "regent": f"{self.regent.title} {self.regent.name}",
+                "item": self.item.name,
+                "player": self.player.name,
                 }
-        return map_dict
+        return game_attr_dict
 
 
 class Player(db.Model):

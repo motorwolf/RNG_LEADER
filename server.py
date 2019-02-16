@@ -1,35 +1,14 @@
 import json, pdb, game, os
 from flask import Flask, render_template, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-#import model
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
-
-position = {
-        'x': 1,
-        'y': 1,
-        'something': 'else'
-        }
-thing = 'hello'
 
 @app.route('/')
 def show_index():
     """Serve the index HTML"""
     return render_template('game.html')
-
-@app.route('/getPos')
-def return_position():
-    return 'hello'
-
-@app.route('/move',methods=["POST"])
-def handle_movement():
-    """Receives move coordinates"""
-    coords = request.get_json()
-    position['x'] = coords['x']
-    position['y'] = coords['y']
-    #breakpoint()
-    return jsonify(position)
 
 @app.route('/player_login', methods=["POST"])
 def player_login():
@@ -41,12 +20,12 @@ def player_login():
     #breakpoint()
     game.db.session.add(new_player)
     game.db.session.commit()
-    import pdb; pdb.set_trace()
     # in the real world we would have a new game button, but right now I'm just testing functionality.
-    new_game = game.Game(regent_id=7,item_id=8,player_id=new_player.player_id,won=False)
+    new_game = game.Game(regent_id=1,item_id=1,player_id=new_player.player_id,won=False)
+    new_game.assign_map_attributes(20,20)
     game.db.session.add(new_game)
     game.db.session.commit()
-    return "Hello there."
+    return jsonify(new_game.game_attributes())
    
 @app.route('/start_game', methods=["POST"])
 def begin_game():
