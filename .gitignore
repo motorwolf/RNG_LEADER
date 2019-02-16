@@ -4,3 +4,4 @@ __pycache__
 *.sw*
 keys
 *.bak
+cruft
