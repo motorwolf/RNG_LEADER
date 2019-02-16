@@ -39,8 +39,12 @@ def player_login():
     player_name = player_login_info['name']
     new_player = game.Player(name=player_name)
     #breakpoint()
-    #import pdb; pdb.set_trace() 
     game.db.session.add(new_player)
+    game.db.session.commit()
+    import pdb; pdb.set_trace()
+    # in the real world we would have a new game button, but right now I'm just testing functionality.
+    new_game = game.Game(regent_id=7,item_id=8,player_id=new_player.player_id,won=False)
+    game.db.session.add(new_game)
     game.db.session.commit()
     return "Hello there."
    

@@ -17,9 +17,11 @@ class Regent(db.Model):
     species = db.Column(db.String(40), nullable=False)
 
     games = db.relationship("Game",
-            backref=db.backref('regents')
+            backref=db.backref('regent')
             )
-    
+
+    def __repr__(self): 
+        return f"<Regent {self.title} {self.name} the {self.species}>"
 
 
 class Game(db.Model):
@@ -33,7 +35,12 @@ class Game(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     won = db.Column(db.Boolean, nullable=False)
 
-    
+    player = db.relationship("Player", backref=db.backref("game"))
+    item = db.relationship("Item", backref=db.backref("game"))
+
+    def __repr__(self):
+        return f"""<Game id={self.game_id} player={self.player.name} regent={self.regent.name} item={self.item.name}>"""
+
     def create_map(self):
         """ Outputs terrain map represented as a multi-dimensional list. """
         totalTiles = self.length * self.width
