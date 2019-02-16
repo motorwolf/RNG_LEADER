@@ -19,8 +19,9 @@ def load_items(file):
     # delete existing items table rows
     Item.query.delete()
     for row in open(file):
-        name = row.rstrip().split('|')
+        name = row.rstrip()
         item = Item(name = name)
+        #import pdb; pdb.set_trace()
         db.session.add(item)
     db.session.commit()
     print("Items===========ADDED")
