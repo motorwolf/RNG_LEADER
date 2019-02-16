@@ -13,6 +13,33 @@ spriteSheet.onload = function() {
 // window.addEventListener('keyup', (e) => {
 //   console.log(e);
 // });
+//
+
+// player form handler.
+const playerLoginForm = document.querySelector("#login");
+playerLoginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  console.log(e);
+  playerName = e.target.elements.name.value;
+  console.log(playerName);
+  // ignore password right now.
+  fetch("/player_login", 
+    {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({'name': playerName}),
+    })
+    .then(response => response.json())
+    .then(response => {
+      console.log(response);
+      // TODO: DO SOMETHING OTHER THAN LOG!
+    });
+});
+
+
 let gameData = {}
 gameStartForm.addEventListener('submit', (e) => {
   e.preventDefault();
