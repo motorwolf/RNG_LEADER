@@ -58,7 +58,6 @@ class Game(db.Model):
         terrain_map = []
         terrain_row = []
         while (sum(elements)) > 0:
-            print('loop ran')
             if len(terrain_row) < width:
                 terrain_choice = random.randrange(0,len(elements))
                 elements[terrain_choice] -= 1
@@ -70,10 +69,10 @@ class Game(db.Model):
         return terrain_map
     
     def assign_map_attributes(self,length,width):
-        """ Creates a map, the start position, and the win position."""
+        """ Creates a map, the start position, and the win position, and assigns to self."""
         self.game_map = self.create_map(length,width)
-        self.start_position = [math.floor(width/2), 1]
-        self.win_position =  [5,length]
+        self.start_position = [math.floor((width - 1)/2), 1]
+        self.win_position =  [5,length - 1]
 
     def game_attributes(self):
         """ Returns a dictionary of relevant attributes to be turned into JSON. """
@@ -222,7 +221,7 @@ class OLD_Map():
     def render_map(self):
         """ The map updates to move player every turn. """
 
-regents = [("Iris","F"), ('Julius Caesar',"M"), ("Penelope","ghost","F"), ("Butkis Stallone",'dog',"M"), ("Little Mac",'human',"M"), ("Gaye Advert","F"), ("Interceptor",'dog',"M"), ("Boudica","F"), ("Anne Bonny","F"), ("Consul Incitatus",'horse',"M"), ("Hachi",'dog',"M")]
+regents = [("Iris","F"), ('Julius Caesar',"M"), ("Penelope","ghost","F"), ("Butkus Stallone",'dog',"M"), ("Little Mac",'human',"M"), ("Gaye Advert","F"), ("Interceptor",'dog',"M"), ("Boudica","F"), ("Anne Bonny","F"), ("Consul Incitatus",'horse',"M"), ("Hachi",'dog',"M")]
 macguffins = ["Felix Klein's personal klein bottle",'Golden Apple of Hesperades',"Leonardo DaVinci's perpetual motion machine",'bezoar',"Franz Joseph Gall's prototype phrenology head", "Josef Haydn's skull", "Charles Boyle's orrery",'Stadium Events cartridge','Compsognathus skeleton','stuffed great auk','Gibson Les Paul Custom 1957 Goldtop',"Elvis Presley's Blue Armadillo rhinestone jumpsuit","a small sled called Rosebud","1966 Velvet Underground and Nico LP with Banana Sticker Fully Intact"]
 random_regent = random.choice(regents)
 random_macguffin = random.choice(macguffins)

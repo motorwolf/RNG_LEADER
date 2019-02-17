@@ -19,7 +19,6 @@ spriteSheet.onload = function() {
 const playerLoginForm = document.querySelector("#login");
 playerLoginForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  console.log(e);
   playerName = e.target.elements.name.value;
   console.log(playerName);
   // ignore password right now.
@@ -34,11 +33,47 @@ playerLoginForm.addEventListener('submit', (e) => {
     })
     .then(response => response.json())
     .then(response => {
+      gameData = response;
+      localStorage.setItem('gameData',JSON.stringify(response));
       console.log(response);
-      // TODO: DO SOMETHING OTHER THAN LOG!
+      renderMap(gameData.terrain);
+      renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+      gameData['cur_pos'] = gameData.start_pos;
     });
 });
 
+window.addEventListener('keydown', (e) => {
+  console.log(e);
+  switch(e.key){
+    case("ArrowDown"):{
+      gameData.cur_pos[1] += 1;
+      renderMap(gameData.terrain);
+      renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+      break;
+    }
+    case("ArrowUp"):{
+      
+      gameData.cur_pos[1] -= 1;
+      renderMap(gameData.terrain);
+      renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+      break;
+    }
+    case("ArrowLeft"):{
+      
+      gameData.cur_pos[0] -= 1;
+      renderMap(gameData.terrain);
+      renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+      break;
+    }
+    case("ArrowRight"):{
+      
+      gameData.cur_pos[0] += 1;
+      renderMap(gameData.terrain);
+      renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+      break;
+    }
+  }
+});
 
 let gameData = {}
 gameStartForm.addEventListener('submit', (e) => {
