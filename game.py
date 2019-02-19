@@ -23,6 +23,12 @@ class Regent(db.Model):
     def __repr__(self): 
         return f"<Regent {self.title} {self.name} the {self.species}>"
 
+class Item(db.Model):
+    """ Item information. """
+    __tablename__ = "items"
+    
+    item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
 
 class Game(db.Model):
     """ Game information. """
@@ -86,25 +92,29 @@ class Game(db.Model):
                 }
         return game_attr_dict
 
+class User(db.Model):
+    """ A user's account. The account can have many players, and the players can have many games."""
+    __tablename__ = 'users'
+    
+    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    
+    players = db.relationship("Player", backref=db.backref("user"))
 
 class Player(db.Model):
     """ Player information. """
     __tablename__ = "players"
     
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+    
+    
     # password? story? times won? alive? mutation?
     # password is in PLAIN TEXT! EEEEEK!
     
-
-class Item(db.Model):
-    """ Item information. """
-    __tablename__ = "items"
-    
-    item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """
@@ -118,7 +128,6 @@ class Collected_Item(db.Model):
 
 def connect_to_db(app):
     """ Connect the database to our Flask app. """
-
     # config to use postgreSQL
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///game'
