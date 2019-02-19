@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+  NAME ::: {{ name }}
+  {% if not collected %}
+  <p> You haven't collected anything yet! </p>
+  {% endif %}
+  {% for item in collected: %}
+      <h2> {{ item }} </h2>
+  {% endfor %}
+  <a href="/start_game">LAUNCH GAME</a>
+{% endblock %}

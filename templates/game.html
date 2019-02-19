@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>THE GAME</title>
-  <style>
-    canvas {
-      border: solid 3px red;
-    };
-  </style>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
   <header>
     WELCOME TO THE GAME
   </header>
@@ -26,18 +16,8 @@
        src="/static/demo_tiles.PNG">
        <!-- width="300" height="227"> -->
 </div>
-    <form action="/player_login" method="POST" id="login">
-      <label>ENTER YOUR NAME <input type="text" name="name"></label>
-      <label>THIS WOULD PRESUMABLY BE YOUR PASSWORD BUT DOES NOTHING RIGHT NOW <input type="password" name="pass"></label>
-      <button type="submit">LOG IN</button>
-    </form>
-    <form action="/start_game" method="POST" id="start">
-      <label>ENTER THY NAME:<input name="name" type="text"/></label>
-      <br>
-      <button type="submit">Start Game</button>
-    </form>
-    <button id="move">MOVE!</button>
+    <button id="game">MOVE!</button>
   </main>
   <script src="static/js/game.js"></script>
 </body>
-</html>
+{% endblock %}

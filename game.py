@@ -93,7 +93,10 @@ class Player(db.Model):
     
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     # password? story? times won? alive? mutation?
+    # password is in PLAIN TEXT! EEEEEK!
     
 
 class Item(db.Model):
