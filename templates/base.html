@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" src="static/css/normalize.css">
+  <link rel="stylesheet">
+  <title>THE GAME</title>
+  <style>
+    canvas {
+      border: solid 3px red;
+    }
+    a {
+      display: block;
+      font-size: 20px;
+    }
+    input, label, button {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  {% include 'nav.html' %}
+  {% block content %}
+  {% endblock %}
+</body>
+</html>
