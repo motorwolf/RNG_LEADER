@@ -70,9 +70,14 @@ def show_user_info(user_id):
         #TODO: message: you are not logged in.
         return redirect("/login")
 
-@app.route('/api/create_player')
+@app.route('/api/create_player', methods=["POST"])
 def create_player():
-    return "hi"
+    new_player_request = request.get_json()
+    name = new_player_request['name']
+    new_player = game.Player(user_id=session['user_id'],name=name)
+    game.db.session.add(new_player)
+    game.db.session.commit()
+    return 'hey'
 
 @app.route('/user/<user_id>/<player_id>')
 def show_player_info(user_id, player_id):
@@ -80,7 +85,7 @@ def show_player_info(user_id, player_id):
         player = game.Player.query.get(player_id) # this should not fail because if your session id has been assigned an id, you exist.
         collected_items = game.Collected_Item.query.filter(game.Collected_Item.player_id == player_id).all()
         #TODO: dump some player info here!
-        return render_template('player.html', name=player.name, collected=collected_items) 
+        return render_template('player.html', name=player.name, collected=collected_items, id=player_id) 
     else:
         #TODO: flash you failed criteria to see this page
         return redirect('/login') 
@@ -104,15 +109,15 @@ def player_login_old():
     game.db.session.commit()
     return jsonify(new_game.game_attributes())
 
-@app.route('/start_game')
-def show_game_page():
-    return render_template("game.html")
+@app.route('/<player_id>/start_game')
+def show_game_page(player_id):
+    return render_template("game.html",player_id=player_id)
 
-@app.route('/api/start_game')
-def begin_game():
+@app.route('/api/<player_id>/start_game')
+def begin_game(player_id):
     """ Initialize the Game. """
     if session['logged_in']:
-        new_game = game.Game(regent_id=1,item_id=1,player_id=session['player_id'],won=False)
+        new_game = game.Game(regent_id=1,item_id=1,player_id=player_id,won=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()

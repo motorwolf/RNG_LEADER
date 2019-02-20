@@ -12,8 +12,8 @@ spriteSheet.onload = function() {
 
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
-  console.log(e);
-  fetch("/api/start_game")
+  const id = document.getElementById('player_id').textContent
+  fetch(`/api/${e.target.name}/start_game`)
     .then(response => response.json())
     .then(response => {
       gameData = response;
@@ -116,19 +116,9 @@ const renderPlayer = (x,y) => {
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
     alert(`HOOORAY! YOU HAVE COLLECTED ${gameData.item}`)
-    fetch('api/item_collected')
+    fetch('api//item_collected')
       .then(response => response.json())
       .then(response => console.log(response));
   }
 }
 
-const createPlayerForm = document.querySelector('#createPlayer');
-createPlayerForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  console.log(e);
-  //createPlayer()
-});
-const createPlayer = () => {
-  // makes an API call to create a player and fetches the data.
-  fetch()
-}
