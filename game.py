@@ -110,7 +110,11 @@ class Player(db.Model):
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
+
+    collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
     
+    def __repr__(self):
+        return f"""<Player name={self.name} user_id={self.user_id}>"""
     
     # password? story? times won? alive? mutation?
     # password is in PLAIN TEXT! EEEEEK!

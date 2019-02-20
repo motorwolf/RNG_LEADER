@@ -8,6 +8,8 @@
     HERE IS THE GAME
     <div id="mapbox">
     THE MAP WILL RENDER HERE, SOMEDAY.
+      <span id="player_id" style="display:none;">{{ player_id }}</span>
+    <button id="game">START THE GAME!</button>
       <canvas id="canvas" width="600" height="400"></canvas>
       <!-- <img src="/static/tiles.png"/> -->
     </div>
@@ -16,8 +18,7 @@
        src="/static/demo_tiles.PNG">
        <!-- width="300" height="227"> -->
 </div>
-    <button id="game">MOVE!</button>
   </main>
-  <script src="static/js/game.js"></script>
+  <script src="/static/js/game.js"></script>
 </body>
 {% endblock %}
