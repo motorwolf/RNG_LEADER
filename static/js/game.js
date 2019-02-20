@@ -13,7 +13,8 @@ spriteSheet.onload = function() {
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
   const id = document.getElementById('player_id').textContent
-  fetch(`/api/${e.target.name}/start_game`)
+  console.log(id);
+  fetch(`/api/${id}/start_game`)
     .then(response => response.json())
     .then(response => {
       gameData = response;
