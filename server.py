@@ -1,4 +1,5 @@
 import json, pdb, game, os, hashlib
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, jsonify, session
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -90,26 +91,7 @@ def show_player_info(user_id, player_id):
         #TODO: flash you failed criteria to see this page
         return redirect('/login') 
 
-
-
-@app.route('/player_login', methods=["POST"])
-def player_login_old():
-    """ Login the player if they exist, else create player."""
-    #TODO: Right now this just creates a player, doesn't check if they exist. Just to test other functions.
-    player_login_info = request.get_json()
-    player_name = player_login_info['name']
-    new_player = game.Player(name=player_name)
-    #breakpoint()
-    game.db.session.add(new_player)
-    game.db.session.commit()
-    # in the real world we would have a new game button, but right now I'm just testing functionality.
-    new_game = game.Game(regent_id=1,item_id=1,player_id=new_player.player_id,won=False)
-    new_game.assign_map_attributes(20,20)
-    game.db.session.add(new_game)
-    game.db.session.commit()
-    return jsonify(new_game.game_attributes())
-
-@app.route('/<player_id>/start_game')
+@app.route('/<player_id>/game')
 def show_game_page(player_id):
     return render_template("game.html",player_id=player_id)
 
@@ -117,6 +99,7 @@ def show_game_page(player_id):
 def begin_game(player_id):
     """ Initialize the Game. """
     if session['logged_in']:
+        # TODO: randomly generate regent and item from unexhausted pool
         new_game = game.Game(regent_id=1,item_id=1,player_id=player_id,won=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
@@ -126,14 +109,18 @@ def begin_game(player_id):
         #TODO: flash you are not logged in. Therefore, how can you play a game? What is happening?
         return redirect('/login')
 
-#    player_map_json = jsonify({**player_info, **map_data}) SAVED so i remember this quick dictionary concat shorthand
 
-@app.route('/api/item_collected')
-def item_collected():
+@app.route('/api/<player_id>/item_collected', methods=["POST"])
+def item_collected(player_id):
     """ The player has collected the item. We will add it to their collection. """
-    
-    player = Player.query.get(session['player_id'])
-
+    game_data = request.get_json()
+    print(game_data)
+    cur_game = game.Game.query.get(game_data['game_id'])
+    if str(cur_game.player.user.user_id) == session['user_id'] and session['logged_in']:
+        collected_item = game.Collected_Item(item_id = cur_game.item.item_id, player_id = cur_game.player.player_id, date_collected = datetime.now())
+        game.db.session.add(collected_item)
+        game.db.session.commit()
+    return 'hey'
 
 if __name__ == '__main__':
     game.connect_to_db(app)
