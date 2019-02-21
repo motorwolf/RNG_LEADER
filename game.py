@@ -83,6 +83,7 @@ class Game(db.Model):
     def game_attributes(self):
         """ Returns a dictionary of relevant attributes to be turned into JSON. """
         game_attr_dict = {
+                "game_id": self.game_id,
                 "start_pos": self.start_position,
                 "win_pos": self.win_position,
                 "terrain": self.game_map,
@@ -122,7 +123,8 @@ class Player(db.Model):
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """
-
+    __tablename__ = 'collected_items'
+    
     collected_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     item_id = db.Column(db.Integer, db.ForeignKey('items.item_id'), nullable=False)
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)

@@ -71,7 +71,6 @@ const renderMap = (coords) => {
   //const height = document.documentElement.clientHeight; =>>> this could be one day used to responsively output block size!
   const unitSize = 32; // icon size, in pixels
   sizeCanvas(unitSize,coords[0].length,coords.length);
-  // HELP: Could these, should these be in a global dictionary? Saves repitition, but then things become less modular and easy to read?
 
   let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
@@ -79,8 +78,8 @@ const renderMap = (coords) => {
   let sHeight = 32; // height of source rect
   let dx = 0; // x axis coord - destination
   let dy = 0; // y axis coord - destination
-  let dWidth = 32; // width of destination rect
-  let dHeight = 32; // height of destination rect
+  let dWidth = unitSize; // width of destination rect
+  let dHeight = unitSize; // height of destination rect
   const terrainMap = {
     1: 'grass',
     2: 'trees',
@@ -110,14 +109,19 @@ const renderPlayer = (x,y) => {
   let sy = 0; // y axis coordinate - source
   let sWidth = 32; // width of source rect
   let sHeight = 32; // height of source rect
-  let dx = x * 32; // x axis coord - destination
-  let dy = y * 32; // y axis coord - destination
-  let dWidth = 32; // width of destination rect
-  let dHeight = 32; // height of destination rect
+  let dx = x * unitSize; // x axis coord - destination
+  let dy = y * unitSize; // y axis coord - destination
+  let dWidth = unitSize; // width of destination rect
+  let dHeight = unitSize; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
     alert(`HOOORAY! YOU HAVE COLLECTED ${gameData.item}`)
-    fetch('api//item_collected')
+    const id = document.getElementById('player_id').textContent;
+    fetch(`/api/${id}/item_collected`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(gameData),
+    })
       .then(response => response.json())
       .then(response => console.log(response));
   }
