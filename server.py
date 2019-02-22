@@ -1,4 +1,4 @@
-import json, pdb, game, os, hashlib
+import json, pdb, game, os, hashlib, random
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, jsonify, session
 from flask_debugtoolbar import DebugToolbarExtension
@@ -115,10 +115,13 @@ def show_game_page(user_id,player_id):
 @app.route('/api/<player_id>/start_game')
 def begin_game(player_id):
     """ Initialize the Game. Generate map, and send new game attributes to browser."""
-    if session['logged_in'] and session['user_id'] == player_id:
+    player = game.Player.query.get(player_id)
+    if session['logged_in'] and session['user_id'] == str(player.user.user_id):
         # TODO: randomly generate regent and item from unexhausted pool
-        breakpoint()
-        new_game = game.Game(regent_id=1,item_id=1,player_id=player_id,won=False)
+        all_items = game.Item.query.all()
+        player_items = [item.item_id for item in player.collected_items]
+        new_items = [item.item_id for item in all_items if item.item_id not in player_items]
+        new_game = game.Game(regent_id=1,item_id=random.choice(new_items),player_id=player_id,won=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
