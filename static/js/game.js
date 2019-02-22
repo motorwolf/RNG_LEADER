@@ -12,7 +12,7 @@ spriteSheet.onload = function() {
 
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
-  const id = document.getElementById('player_id').textContent
+  const id = document.getElementById('player_id').textContent;
   console.log(id);
   fetch(`/api/${id}/start_game`)
     .then(response => response.json())
@@ -57,6 +57,8 @@ const startGame = () => {
       }
     }
   });
+  const textBox = document.getElementById('textBox');
+   
 }
 
 const sizeCanvas = (unitSize, width, height) => {
@@ -115,14 +117,15 @@ const renderPlayer = (x,y) => {
   let dHeight = unitSize; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
-    alert(`HOOORAY! YOU HAVE COLLECTED ${gameData.item}`)
+    const textBox = document.getElementById('textBox');
+    textBox.textContent.concat(`HOOORAY! YOU HAVE COLLECTED ${gameData.item}`);
     const id = document.getElementById('player_id').textContent;
     fetch(`/api/${id}/item_collected`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(gameData),
     })
-      .then(response => response.json())
+    //.then(response => response.json())
       .then(response => console.log(response));
   }
 }

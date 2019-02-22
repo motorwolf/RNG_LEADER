@@ -15,6 +15,7 @@ class Regent(db.Model):
     name = db.Column(db.String(40), nullable=False)
     title = db.Column(db.String(40), nullable=True)
     species = db.Column(db.String(40), nullable=False)
+    description = db.Column(db.String(200), nullable=True)
 
     games = db.relationship("Game",
             backref=db.backref('regent')
@@ -29,6 +30,7 @@ class Item(db.Model):
     
     item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
         return f"<Item {self.name}>"
@@ -43,6 +45,7 @@ class Game(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('items.item_id'), nullable=False)
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     won = db.Column(db.Boolean, nullable=False)
+    item_collected = db.Column(db.Boolean, nullable=False)
 
     player = db.relationship("Player", backref=db.backref("games"))
     item = db.relationship("Item", backref=db.backref("game"))
@@ -137,7 +140,8 @@ class Player(db.Model):
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-
+    alive = db.Column(db.Boolean, nullable=False)
+    mutation_id = db.Column(db.Integer, db.ForeignKey('mutations.mutation_id'), nullable=False)
     collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
     
     def __repr__(self):
@@ -161,7 +165,32 @@ class Collected_Item(db.Model):
     def __repr__(self):
         return f"<Collected Item: {self.item.name}>"
 
-# class Mutations
+class Mutation(db.Model):
+    """ A bunch of mutations. A player is randomly assigned one. """
+    __tablename__ = 'mutations'
+
+    mutation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+
+    def __repr__(self):
+        return f"<Mutation: {self.name}>"
+
+class Story_Block(db.Model):
+    """ This is the house for our generative text. Right now it is static blocks of text with slots for variables. """
+    __tablename__ = 'story_blocks'
+
+    story_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    block_type = db.Column(db.String(100), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+
+class Player_Story(db.Model):
+    """ This table will store our various player stories. """
+    __tablename__ = 'player_stories'
+
+    player_story_id = db.Column(db.DateTime, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
+    story_text = db.Column(db.Text, nullable=False)
 
 def connect_to_db(app):
     """ Connect the database to our Flask app. """

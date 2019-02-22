@@ -90,7 +90,8 @@ def create_player():
     """ Creates a new player based on JSON sent and adds the new player to the database. Associates based on logged in user_id. """ 
     new_player_request = request.get_json()
     name = new_player_request['name']
-    new_player = game.Player(user_id=session['user_id'],name=name)
+    mutation_id = random.choice(game.Mutation.query.all()).mutation_id
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True)
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird
@@ -125,7 +126,7 @@ def begin_game(player_id):
             new_item = random.choice(new_items)
         else:
             new_item = game.Item.query.filter(game.Item.name == "Future Tech").first().item_id
-        new_game = game.Game(regent_id=1,item_id=new_item,player_id=player_id,won=False)
+        new_game = game.Game(regent_id=1,item_id=new_item,player_id=player_id,won=False, item_collected=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
@@ -143,8 +144,11 @@ def item_collected(player_id):
     if str(cur_game.player.user.user_id) == session['user_id'] and session['logged_in']:
         collected_item = game.Collected_Item(item_id = cur_game.item.item_id, player_id = cur_game.player.player_id, date_collected = datetime.now())
         game.db.session.add(collected_item)
+        cur_game.item_collected = True
         game.db.session.commit()
-    return 'hey'
+    else:
+        return "something went wrong."
+    return "true"
 
 if __name__ == '__main__':
     game.connect_to_db(app)
