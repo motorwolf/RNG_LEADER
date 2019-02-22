@@ -118,10 +118,14 @@ def begin_game(player_id):
     player = game.Player.query.get(player_id)
     if session['logged_in'] and session['user_id'] == str(player.user.user_id):
         # TODO: randomly generate regent and item from unexhausted pool
-        all_items = game.Item.query.all()
+        all_items = game.Item.query.filter(game.Item.name != "Future Tech").all()
         player_items = [item.item_id for item in player.collected_items]
         new_items = [item.item_id for item in all_items if item.item_id not in player_items]
-        new_game = game.Game(regent_id=1,item_id=random.choice(new_items),player_id=player_id,won=False)
+        if len(new_items) != 0:
+            new_item = random.choice(new_items)
+        else:
+            new_item = game.Item.query.filter(game.Item.name == "Future Tech").first().item_id
+        new_game = game.Game(regent_id=1,item_id=new_item,player_id=player_id,won=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
@@ -135,7 +139,6 @@ def begin_game(player_id):
 def item_collected(player_id):
     """ The player has collected the item. We will add it to their collection. """
     game_data = request.get_json()
-    print(game_data)
     cur_game = game.Game.query.get(game_data['game_id'])
     if str(cur_game.player.user.user_id) == session['user_id'] and session['logged_in']:
         collected_item = game.Collected_Item(item_id = cur_game.item.item_id, player_id = cur_game.player.player_id, date_collected = datetime.now())
