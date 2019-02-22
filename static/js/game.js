@@ -30,7 +30,6 @@ const startGame = () => {
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = gameData.start_pos;
   window.addEventListener('keydown', (e) => {
-    console.log(e);
     switch(e.key){
       case("ArrowDown"):{
         gameData.cur_pos[1] += 1;
@@ -69,6 +68,7 @@ const sizeCanvas = (unitSize, width, height) => {
 const renderMap = (coords) => {
   // This method eats our multidimensional array and spits out beautiful sprites.
   //const height = document.documentElement.clientHeight; =>>> this could be one day used to responsively output block size!
+  // could this function actually call the other function? That way we could pass it unitSize rather than redeclaring it.
   const unitSize = 32; // icon size, in pixels
   sizeCanvas(unitSize,coords[0].length,coords.length);
 

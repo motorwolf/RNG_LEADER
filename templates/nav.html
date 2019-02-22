@@ -1,9 +1,14 @@
 <nav>
   <ul>
-    <li>Thing1</li>
-    <li>Thing2</li>
-    <li>Thing3</li>
-    <li>Thing4</li>
+    <li><a href="/">HOME</a></li>
+    {% if session['logged_in']: %}
+    <li><a href="../logout">LOG OUT</a></li>
+    <li><a href="/user/{{ session['user_id'] }}">MY PAGE!</a></li>
+    {% elif session['logged_in'] == False %}
+    <li><a href="../signup">SIGN UP</a></li>
+    <li><a href="../login">LOG IN</a></li>
+    {% endif %}
+    <li><a href="/leaders">LEADERS ?</a></li>
     <li>Thing5</li>
   </ul>
 </nav>

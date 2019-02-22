@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-  NAME ::: {{ name }}
+  HELLO USER! You have logged in.
   {% if not players %}
   <p> You have not created any players. </p>
   {% endif %}
   {% for player in players:%}
-  <a href="/user/{{user_id}}/{{player.player_id}}">{{player.name}}</a>
+  <a href="/user/{{user_id}}/player/{{player.player_id}}">{{player.name}}</a>
   {% endfor %}
+  <br>
   CREATE NEW PLAYER!
   <form action="/api/create_player" id="createPlayer">
     <label>PLAYER NAME: <input type="text" name="name"></label>
     <button type="submit">CREATE ME</button>
   </form>
-  {% for item in collected: %}
-      <h2> {{ item }} </h2>
-  {% endfor %}
-  <a href="/start_game">LAUNCH GAME</a>
-  <script src="../static/js/createPlayer.js"/>
+  <br>
+  <script src="/static/js/createPlayer.js"></script>
 {% endblock %}
