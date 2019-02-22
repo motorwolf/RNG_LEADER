@@ -44,7 +44,7 @@ class Game(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     won = db.Column(db.Boolean, nullable=False)
 
-    player = db.relationship("Player", backref=db.backref("game"))
+    player = db.relationship("Player", backref=db.backref("games"))
     item = db.relationship("Item", backref=db.backref("game"))
     
 
