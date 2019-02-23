@@ -31,6 +31,21 @@ const outputPlayerStatus = (gameData) => {
   const name = statusBox.getElementById("name");
 }
 
+const movePlayer = (dir,currentPosition) => {
+  const directions = {
+    "down": {"axis": 1,"delta": 1},
+    "up": {"axis": 1,"delta":-1},
+    "left": {"axis":0,"delta":-1},
+    "right": {"axis":0,"delta":1},
+  }
+  const targetDirection = directions[dir];
+  const delta = targetDirection.delta;
+  currentPosition[targetDirection.axis] +=delta;
+  renderMap(gameData.terrain);
+  renderStartPos(gameData.start_pos);
+  renderPlayer(currentPosition[0], currentPosition[1]);
+}
+
 const startGame = () => {
   gameData['item_collected'] = false;
   console.log(statusBox);
@@ -39,34 +54,25 @@ const startGame = () => {
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = [...gameData.start_pos];
   window.addEventListener('keydown', (e) => {
-    e.preventDefault();
     switch(e.key){
       case("ArrowDown"):{
-        gameData.cur_pos[1] += 1;
-        renderMap(gameData.terrain);
-        renderStartPos(gameData.start_pos);
-        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+        e.preventDefault();
+        movePlayer("down", gameData.cur_pos);
         break;
       }
       case("ArrowUp"):{
-        gameData.cur_pos[1] -= 1;
-        renderMap(gameData.terrain);
-        renderStartPos(gameData.start_pos);
-        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+        e.preventDefault();
+        movePlayer("up", gameData.cur_pos);
         break;
       }
       case("ArrowLeft"):{
-        gameData.cur_pos[0] -= 1;
-        renderMap(gameData.terrain);
-        renderStartPos(gameData.start_pos);
-        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+        e.preventDefault();
+        movePlayer("left", gameData.cur_pos);
         break;
       }
       case("ArrowRight"):{
-        gameData.cur_pos[0] += 1;
-        renderMap(gameData.terrain);
-        renderStartPos(gameData.start_pos);
-        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+        e.preventDefault();
+        movePlayer("right", gameData.cur_pos);
         break;
       }
     }
