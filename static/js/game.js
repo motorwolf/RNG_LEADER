@@ -1,6 +1,7 @@
 localStorage = window.localStorage;
 
-let gameData = {};
+let gameData = {
+};
 
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
@@ -25,34 +26,39 @@ gameInitButton.addEventListener('click', (e) => {
 });
 
 const startGame = () => {
-  gameStarted = true; // why?
+  gameData['item_collected'] = false;
   renderMap(gameData.terrain);
+  renderStartPos(gameData.start_pos);
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
-  gameData['cur_pos'] = gameData.start_pos;
+  gameData['cur_pos'] = [...gameData.start_pos];
   window.addEventListener('keydown', (e) => {
     switch(e.key){
       case("ArrowDown"):{
         gameData.cur_pos[1] += 1;
         renderMap(gameData.terrain);
-        renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+        renderStartPos(gameData.start_pos);
+        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
         break;
       }
       case("ArrowUp"):{
         gameData.cur_pos[1] -= 1;
         renderMap(gameData.terrain);
-        renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+        renderStartPos(gameData.start_pos);
+        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
         break;
       }
       case("ArrowLeft"):{
         gameData.cur_pos[0] -= 1;
         renderMap(gameData.terrain);
-        renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+        renderStartPos(gameData.start_pos);
+        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
         break;
       }
       case("ArrowRight"):{
         gameData.cur_pos[0] += 1;
         renderMap(gameData.terrain);
-        renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
+        renderStartPos(gameData.start_pos);
+        renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
         break;
       }
     }
@@ -102,9 +108,27 @@ const renderMap = (coords) => {
       ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     }
   }
+
   return coords;
 }
+
+const renderStartPos = (coord) => {
+  //debugger;
+  const x = coord[0];
+  const y = coord[1];
+  const unitSize = 32; // unit size should be more global........ ugh
+  let sx = 128; // x axis coordinate - source
+  let sy = 0; // y axis coordinate - source
+  let sWidth = 32; // width of source rect
+  let sHeight = 32; // height of source rect
+  let dx = x * unitSize; // x axis coord - destination
+  let dy = y * unitSize; // y axis coord - destination
+  let dWidth = unitSize; // width of destination rect
+  let dHeight = unitSize; // height of destination rect
+  ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+}
 const renderPlayer = (x,y) => {
+  // This function renders the player position and checks whether or not the player position is on the winning square.
   console.log(x,y);
   const unitSize = 32;
   let sx = 96; // x axis coordinate - source
@@ -117,16 +141,28 @@ const renderPlayer = (x,y) => {
   let dHeight = unitSize; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
-    const textBox = document.getElementById('textBox');
-    textBox.textContent.concat(`HOOORAY! YOU HAVE COLLECTED ${gameData.item}`);
-    const id = document.getElementById('player_id').textContent;
-    fetch(`/api/${id}/item_collected`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(gameData),
-    })
-    //.then(response => response.json())
-      .then(response => console.log(response));
+    if(!gameData.item_collected){
+      const textBox = document.getElementById('textBox');
+      textBox.innerHTML = textBox.innerHTML.concat(`<p>HOOORAY! YOU HAVE COLLECTED ${gameData.item}</p>`);
+      const id = document.getElementById('player_id').textContent;
+      fetch(`/api/${id}/item_collected`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(gameData),
+      })
+        .then(response => {
+          if(response.ok){
+            gameData.item_collected = true;
+          }
+        });
+    }
+  }
+  if(gameData.item_collected){
+    if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
+      // Do something. Namely, you will return the item to your regent.
+      const textBox = document.getElementById('textBox');
+      textBox.innerHTML = textBox.innerHTML.concat('<p>YES! You delivered the thing!</p>');
+    }
   }
 }
 
