@@ -130,7 +130,10 @@ def begin_game(player_id):
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
+        #story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'start').one().text.split("$")  <== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
+        
         return jsonify(new_game.game_attributes())
+    
     else:
         #TODO: flash you are not logged in. Therefore, how can you play a game? What is happening?
         return redirect('/login')
