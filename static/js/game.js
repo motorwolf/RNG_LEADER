@@ -39,6 +39,7 @@ const startGame = () => {
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = [...gameData.start_pos];
   window.addEventListener('keydown', (e) => {
+    e.preventDefault();
     switch(e.key){
       case("ArrowDown"):{
         gameData.cur_pos[1] += 1;
