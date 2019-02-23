@@ -25,8 +25,15 @@ gameInitButton.addEventListener('click', (e) => {
     });
 });
 
+const outputPlayerStatus = (gameData) => {
+  // I am thinking this will be a utility function to output player status.
+  const statusBox = document.getElementById("statusBox");
+  const name = statusBox.getElementById("name");
+}
+
 const startGame = () => {
   gameData['item_collected'] = false;
+  console.log(statusBox);
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
