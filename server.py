@@ -130,9 +130,17 @@ def begin_game(player_id):
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
-        #story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'start').one().text.split("$")  <== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
-        
-        return jsonify(new_game.game_attributes())
+        game_attr = new_game.game_attributes()
+        story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'start').one().\
+                          format_story(game_attr)
+        game_attr['start_text'] = story_block
+        #####
+        new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=player_id,story_text = story_block)
+        game.db.session.add(new_story_block)
+        game.db.session.commit()
+        #<== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
+        breakpoint()
+        return jsonify(game_attr)
     
     else:
         #TODO: flash you are not logged in. Therefore, how can you play a game? What is happening?
