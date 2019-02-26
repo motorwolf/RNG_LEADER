@@ -50,9 +50,18 @@ const movePlayer = (dir,currentPosition) => {
   currentPosition[targetDirection.axis] +=delta;
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
-  renderPlayer(currentPosition[0], currentPosition[1]); 
+  renderPlayer(currentPosition[0], currentPosition[1]);
 }
 
+const isBattleTime = (percent) => {
+  const number = Math.floor(Math.random() * 100);
+  if(number > percent){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
 
 const startGame = () => {
   gameData['item_collected'] = false;
@@ -178,11 +187,15 @@ const renderPlayer = (x,y) => {
         });
     }
   }
-  if(gameData.item_collected){
-    if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
-      // Do something. Namely, you will return the item to your regent.
-      logToBox('<p>YES! You delivered the thing!</p>');
+  
+  if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
+    if(gameData.item_collected){
+        // Do something. Namely, you will return the item to your regent.
+        logToBox('<p>YES! You delivered the thing!</p>');
+      }
     }
-  }
+  else if(isBattleTime(10)){
+    logToBox('A battle was initiated.');
+  };
 }
 
