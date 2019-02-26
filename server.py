@@ -139,7 +139,6 @@ def begin_game(player_id):
         game.db.session.add(new_story_block)
         game.db.session.commit()
         #<== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
-        breakpoint()
         return jsonify(game_attr)
     
     else:
