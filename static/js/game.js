@@ -25,6 +25,12 @@ gameInitButton.addEventListener('click', (e) => {
     });
 });
 
+const logToBox = (html) => {
+  const textBox = document.getElementById('textBox');
+  textBox.innerHTML = textBox.innerHTML.concat(`<p>${html}<p>`);
+  textBox.scrollTop = textBox.scrollHeight;
+}
+
 const outputPlayerStatus = (gameData) => {
   // I am thinking this will be a utility function to output player status.
   const statusBox = document.getElementById("statusBox");
@@ -32,6 +38,7 @@ const outputPlayerStatus = (gameData) => {
 }
 
 const movePlayer = (dir,currentPosition) => {
+  // Interprets player direction, renders map, renders the starting position sprite, updates the player position and renders the player sprite.
   const directions = {
     "down": {"axis": 1,"delta": 1},
     "up": {"axis": 1,"delta":-1},
@@ -43,11 +50,13 @@ const movePlayer = (dir,currentPosition) => {
   currentPosition[targetDirection.axis] +=delta;
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
-  renderPlayer(currentPosition[0], currentPosition[1]);
+  renderPlayer(currentPosition[0], currentPosition[1]); 
 }
+
 
 const startGame = () => {
   gameData['item_collected'] = false;
+  logToBox(gameData.start_text);
   console.log(statusBox);
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
@@ -127,8 +136,8 @@ const renderMap = (coords) => {
 }
 
 const renderStartPos = (coord) => {
-  //debugger;
-  const x = coord[0];
+  // renders the start square sprite on the start square. should possibly be chained to the map rendering function?
+  const x = coord[0]; 
   const y = coord[1];
   const unitSize = 32; // unit size should be more global........ ugh
   let sx = 128; // x axis coordinate - source
@@ -142,8 +151,7 @@ const renderStartPos = (coord) => {
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 const renderPlayer = (x,y) => {
-  // This function renders the player position and checks whether or not the player position is on the winning square.
-  console.log(x,y);
+  // This function updates the player position, renders the player sprite, and checks whether or not the player position is on the winning square.
   const unitSize = 32;
   let sx = 96; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
@@ -156,8 +164,7 @@ const renderPlayer = (x,y) => {
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
     if(!gameData.item_collected){
-      const textBox = document.getElementById('textBox');
-      textBox.innerHTML = textBox.innerHTML.concat(`<p>HOOORAY! YOU HAVE COLLECTED ${gameData.item}</p>`);
+      logToBox(`<p>HOORAY! YOU HAVE COLLECTED ${gameData.item}!</p>`);
       const id = document.getElementById('player_id').textContent;
       fetch(`/api/${id}/item_collected`, {
         method: 'POST',
@@ -174,8 +181,7 @@ const renderPlayer = (x,y) => {
   if(gameData.item_collected){
     if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
       // Do something. Namely, you will return the item to your regent.
-      const textBox = document.getElementById('textBox');
-      textBox.innerHTML = textBox.innerHTML.concat('<p>YES! You delivered the thing!</p>');
+      logToBox('<p>YES! You delivered the thing!</p>');
     }
   }
 }

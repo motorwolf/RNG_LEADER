@@ -98,11 +98,13 @@ class Game(db.Model):
                 "terrain": self.game_map,
                 "regent": f"{self.regent.title} {self.regent.name}",
                 "item": self.item.name,
-                "player": self.player.name,
+                "name": self.player.name,
+                "mutation": self.player.mutation.name,
                 }
         def int_lst_to_str(lst):
             """ Utility to convert a list of numbers to a joined string"""
             return (",").join([str(num) for num in lst])
+
         terrain_string = ",".join([str(t_unit) for t_row in self.game_map for t_unit in t_row])
         new_map = Map(game_id=self.game_id, map_data=terrain_string, map_size=len(self.game_map[0]), cur_pos=int_lst_to_str(self.cur_pos), win_pos=int_lst_to_str(self.win_pos))
         db.session.add(new_map)
@@ -142,13 +144,14 @@ class Player(db.Model):
     name = db.Column(db.String(50), nullable=False)
     alive = db.Column(db.Boolean, nullable=False)
     mutation_id = db.Column(db.Integer, db.ForeignKey('mutations.mutation_id'), nullable=False)
+    #score = db.Column(db.Integer, nullable=False) 
+    #stats = should this be a relational table?
     collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
+    mutation = db.relationship("Mutation", backref = db.backref("players"))
     
     def __repr__(self):
         return f"""<Player name={self.name} user_id={self.user_id}>"""
     
-    # password? story? times won? alive? mutation?
-    # password is in PLAIN TEXT! EEEEEK!
     
 
 class Collected_Item(db.Model):
@@ -183,6 +186,30 @@ class Story_Block(db.Model):
     story_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     block_type = db.Column(db.String(100), nullable=False)
     text = db.Column(db.Text, nullable=False)
+    
+    def format_story(self,game_dict):
+        """ Game dict will be a dictionary of values that match the variable slots in our story block, which is a long text string. Returns the variables plugged into the text block."""
+        
+        def is_string_one_word(string):
+            if len(string.split(" ")) == 1:
+                dictionary_value = game_dict.get(string,string)
+                return dictionary_value
+            else:
+                return string
+
+        formatted_block = "".join(map(is_string_one_word, self.text.split('$')))
+        return formatted_block
+        
+        ####
+        # formatted_block = " ".join(story_block.split('$').map(lambda s:
+        #     if len(s.split(" ")) == 1:
+        #         game_dict.get(s,s) # if string is not in our dictionary, return the string.
+        #     else: 
+        #         return s
+        #     ))
+        # return formatted_block
+
+
 
 class Player_Story(db.Model):
     """ This table will store our various player stories. """
