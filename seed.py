@@ -8,8 +8,8 @@ def load_regents(file):
     Regent.query.delete()
 
     for row in open(file):
-        name, title, species, description = row.rstrip().split("|")
-        regent = Regent(name=name,title=title,species=species,description=description)
+        name, title, species, description, attitude = row.rstrip().split("|")
+        regent = Regent(name=name,title=title,species=species,description=description,attitude=attitude)
         db.session.add(regent)
     db.session.commit()
     
@@ -29,8 +29,8 @@ def load_items(file):
 def load_mutations(file):
     Mutation.query.delete()
     for line in open(file):
-        name, description = line.rstrip().split("|")
-        mutation = Mutation(name=name, description=description)
+        name, description,scale = line.rstrip().split("|")
+        mutation = Mutation(name=name, description=description, scale=scale)
         db.session.add(mutation)
     db.session.commit()
     print("Mutations..........ADDED!")

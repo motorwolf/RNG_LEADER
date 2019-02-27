@@ -192,10 +192,26 @@ const renderPlayer = (x,y) => {
     if(gameData.item_collected){
         // Do something. Namely, you will return the item to your regent.
         logToBox('<p>YES! You delivered the thing!</p>');
+        fetch(`/api/game_won`,{
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(gameData),
+        })
+        .then(response => {
+          if(response.ok){
+            console.log(response);
+          }
+        });
       }
     }
   else if(isBattleTime(10)){
     logToBox('A battle was initiated.');
+    startBattle();
   };
+}
+
+const startBattle = () => {
+  // Take player stats and battle. 
+
 }
 
