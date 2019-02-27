@@ -16,6 +16,7 @@ class Regent(db.Model):
     title = db.Column(db.String(40), nullable=True)
     species = db.Column(db.String(40), nullable=False)
     description = db.Column(db.String(200), nullable=True)
+    attitude = db.Column(db.Integer, nullable=True)
 
     games = db.relationship("Game",
             backref=db.backref('regent')
@@ -100,6 +101,7 @@ class Game(db.Model):
                 "item": self.item.name,
                 "name": self.player.name,
                 "mutation": self.player.mutation.name,
+                "stats": self.player.stats,
                 }
         def int_lst_to_str(lst):
             """ Utility to convert a list of numbers to a joined string"""
@@ -144,11 +146,16 @@ class Player(db.Model):
     name = db.Column(db.String(50), nullable=False)
     alive = db.Column(db.Boolean, nullable=False)
     mutation_id = db.Column(db.Integer, db.ForeignKey('mutations.mutation_id'), nullable=False)
-    #score = db.Column(db.Integer, nullable=False) 
-    #stats = should this be a relational table?
+    score = db.Column(db.Integer, nullable=False) 
+    stats = db.Column(db.JSON, nullable=False)
+    
+
     collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
     mutation = db.relationship("Mutation", backref = db.backref("players"))
     
+    def assign_stats(self):
+        self.stats = {'will':'this work?'}
+
     def __repr__(self):
         return f"""<Player name={self.name} user_id={self.user_id}>"""
     
@@ -175,6 +182,7 @@ class Mutation(db.Model):
     mutation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    scale = db.Column(db.Integer,nullable=False)
 
     def __repr__(self):
         return f"<Mutation: {self.name}>"
@@ -218,6 +226,7 @@ class Player_Story(db.Model):
     player_story_id = db.Column(db.DateTime, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     story_text = db.Column(db.Text, nullable=False)
+
 
 def connect_to_db(app):
     """ Connect the database to our Flask app. """

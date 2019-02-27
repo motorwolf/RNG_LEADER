@@ -91,7 +91,7 @@ def create_player():
     new_player_request = request.get_json()
     name = new_player_request['name']
     mutation_id = random.choice(game.Mutation.query.all()).mutation_id
-    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True)
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'S':20,'I':20,'C':20,'HP_MAX':100,'HP':100})
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird
@@ -159,6 +159,23 @@ def item_collected(player_id):
     else:
         return "something went wrong."
     return "true"
+
+@app.route('/api/game_won',methods=["POST"])
+def update_game_and_win():
+    game_info = request.get_json()
+    current_game = game.Game.query.get(game_info['game_id'])
+    if logged_in_and_auth(current_game.player.user.user_id):
+        current_game.won = True;
+        game.db.session.commit()
+    breakpoint()
+    return 'hi'
+
+def logged_in_and_auth(id_to_check):
+    id_to_check = str(id_to_check)
+    if session['user_id'] == id_to_check and session['logged_in']:
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     game.connect_to_db(app)
