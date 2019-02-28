@@ -1,5 +1,5 @@
 """ This file will seed data into our database. """
-from game import Regent, Game, Player, Item, Collected_Item, Mutation, Story_Block, connect_to_db, db
+from game import Regent, Game, Player, Item, Collected_Item, Mutation, Story_Block, Enemy, connect_to_db, db
 from server import app
 
 def load_regents(file):
@@ -45,6 +45,26 @@ def load_story_blocks(file):
     db.session.commit()
     print("STORY blocks==========ADDED!")
 
+def load_enemies(file):
+
+    Enemy.query.delete()
+    stat_schema = {
+            "str": 0,
+            "dex": 0,
+            "arm": 0,
+            "weap": 0,
+            }
+    for row in open(file):
+        if "#" not in row:
+            name, level, exp, strength, dex, arm, weap, desc = row.rstrip().split("|")
+            stat_schema["str"] = strength
+            stat_schema["dex"] = dex
+            stat_schema["arm"], stat_schema["weap"] = arm, weap
+            new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema, description=desc)
+            db.session.add(new_enemy)
+    db.session.commit()
+    print("ENEMIES!! =============ADDED!")
+
 if __name__ == '__main__':
     connect_to_db(app)
     db.create_all()
@@ -52,3 +72,4 @@ if __name__ == '__main__':
     load_items('data/items')
     load_mutations('data/mutations')
     load_story_blocks('data/story_blocks')
+    load_enemies('data/enemies')

@@ -206,12 +206,83 @@ const renderPlayer = (x,y) => {
     }
   else if(isBattleTime(10)){
     logToBox('A battle was initiated.');
+    let enemyData = {};
+    fetch('/api/get_enemy?level=1')
+      .then(response => response.json())
+      .then(response => {
+        console.log("HELLOLL+++LL+??");
+        console.log(response);
+        enemyData = response;
+        console.log(enemyData);
+      });
+    console.log(enemyData); // weird. by the time I get to this point in the script, enemyData is blank...
+    let enemyCombatant = new Enemy(enemyData);
+    console.log(enemyCombatant);
     startBattle();
   };
 }
 
-const startBattle = () => {
-  // Take player stats and battle. 
-
+class Enemy {
+  constructor(eData){
+    debugger;
+    this.name = eData.name;
+    this.stats = eData.stats;
+    this.exp = eData.exp;
+    this.desc = eData.desc;
+    // we expect stats to be an object of predictable stats. Do we need level here?
+    //this.str = stats.str;
+    //this.int = stats.int;
+    //this.cha = stats.cha;
+    //this.dex = stats.dex;
+    //this.weap = stats.weap; // will be an array of min, max
+    ////this.spd = stats.spd; speed and agility?
+    //this.arm = stats.arm; 
+    //this.hp = stats.hp_max;
+    //this.hp_max = stats.hp_max; 
+    // experience points given? this could be acalculation based on level
+    // Do we need speed to calculate who goes first?
+    // Player and enemy will have predictable stats.
+  }
+  attack(targetStats) {
+    debugger;
+    let hitSuccess;
+    let damage;
+    let hitChance = Math.floor(Math.random() * (this.stats.dex + 20)); 
+    if(hitChance > 2){
+      hitSuccess = true;
+    } // to hit chance
+    if(hitSuccess){
+      let baseDamage = this.stats.weap + (this.stats.str/2);
+      console.log(baseDamage);
+      let damage = (Math.floor(Math.random() * (baseDamage * 2)) + baseDamage) - targetStats.arm;
+      if(damage < 0){
+        damage = 1;
+      }
+      console.log(damage, baseDamage);
+      targetStats.hp -= damage;
+      if(targetStats.hp < 0){
+        console.log("You have killed the enemy.");
+      }
+    }
+    else {
+      console.log("MISS!");
+    }
+    // we expect target to be the player stats.
+    // before we run this, we would need to calculate which player goes first.
+    }
 }
+
+
+const startBattle = () => {}
+  // Take player stats and battle. 
+let dummyEnemyStats = {
+    "str": 1,
+    "int": 1,
+    "cha": 1,
+    "dex": 1,
+    "weap": 2,
+    "arm": 1,
+    "hp": 10,
+    "hp_max": 10,
+  };
 
