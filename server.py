@@ -91,7 +91,7 @@ def create_player():
     new_player_request = request.get_json()
     name = new_player_request['name']
     mutation_id = random.choice(game.Mutation.query.all()).mutation_id
-    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'S':20,'I':20,'C':20,'HP_MAX':100,'HP':100})
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':20,'int':20,'cha':20,'dex': 20,'hp_max':100,'hp':100,'arm':20,'weap':10})
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird
@@ -162,13 +162,19 @@ def item_collected(player_id):
 
 @app.route('/api/game_won',methods=["POST"])
 def update_game_and_win():
+    """ The player has brought the item to the beginning square, and has won the game."""
     game_info = request.get_json()
     current_game = game.Game.query.get(game_info['game_id'])
     if logged_in_and_auth(current_game.player.user.user_id):
         current_game.won = True;
         game.db.session.commit()
-    breakpoint()
-    return 'hi'
+    return 'hi' # need to really do something here!
+
+@app.route('/api/get_enemy', methods=["GET"])
+def return_enemy():
+    level = int(request.args.get('level'))
+    enemy = random.choice(game.Enemy.query.filter(game.Enemy.level == level).all());
+    return jsonify(enemy.enemy_attributes())
 
 def logged_in_and_auth(id_to_check):
     id_to_check = str(id_to_check)

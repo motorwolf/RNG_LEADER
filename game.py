@@ -227,6 +227,27 @@ class Player_Story(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     story_text = db.Column(db.Text, nullable=False)
 
+class Enemy(db.Model):
+    """ This table will contain enemy stats and names. """
+    __tablename__ = 'enemies'
+
+    enemy_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(20), nullable=False)
+    level = db.Column(db.Integer, nullable=False)
+    stats = db.Column(db.JSON, nullable=False)
+    exp = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(100), nullable=True)
+    
+    def enemy_attributes(self):
+        enemy_dict = {
+                'name': self.name,
+                # do I need level?
+                'stats': self.stats,
+                'exp': self.exp,
+                'desc': self.description,
+                }
+        return enemy_dict
+
 
 def connect_to_db(app):
     """ Connect the database to our Flask app. """
