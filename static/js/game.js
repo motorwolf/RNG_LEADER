@@ -20,6 +20,7 @@ gameInitButton.addEventListener('click', (e) => {
     .then(response => {
       gameData = response;
       localStorage.setItem('gameData',JSON.stringify(response));
+      gameData.hero = new Hero(gameData);
       console.log(response);
       startGame();
     });
@@ -210,7 +211,7 @@ const renderPlayer = (x,y) => {
       .then(response => response.json())
       .then(response => {
         console.log(response);
-        startBattle(response, gameData.stats);
+        startBattle(response, gameData.hero);
       });
   };
 }
@@ -220,12 +221,43 @@ class Player {
     this.stats = data.stats;
     this.alive = true;
   }
+
+  attack(target) {
+    debugger;
+    let hitSuccess;
+    let damage;
+    let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 
+    if(hitChance > 2){
+      hitSuccess = true;
+    } // to hit chance
+    if(hitSuccess){
+      let baseDamage = this.stats.weap + (this.stats.str/2);
+      console.log(baseDamage);
+      let damage = (Math.floor(Math.random() * (baseDamage * 2)) + baseDamage) - target.stats.arm;
+      if(damage < 0){
+        damage = 1;
+      }
+      console.log(damage, baseDamage);
+      logToBox(`The ${self.name} hits for ${damage} damage!`);
+      target.stats.hp -= damage;
+      if(target.stats.hp < 0){
+        logToBox('It is a critical hit.')
+        console.log("You have killed the enemy.");
+        target.alive = false;
+      }
+    }
+    else {
+      logToBox(`${self.name} MISSES!`);
+    }
+    // we expect target to be the player stats.
+    // before we run this, we would need to calculate which player goes first.
+    }
 }
 class Hero extends Player {
   constructor(data){
     // current position might make sense here.
     super(data);
-    this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons.
+    this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons. One day it will do stuff?
   }
 }
 
@@ -238,42 +270,34 @@ class Enemy extends Player {
       this.desc = data.desc;
     // we expect stats to be an object of predictable stats. Do we need level here?
     // Do we need speed to calculate who goes first?
-    // Player and enemy will have predictable stats.
   }
-  attack(targetStats) {
-    debugger;
-    let hitSuccess;
-    let damage;
-    let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 
-    if(hitChance > 2){
-      hitSuccess = true;
-    } // to hit chance
-    if(hitSuccess){
-      let baseDamage = this.stats.weap + (this.stats.str/2);
-      console.log(baseDamage);
-      let damage = (Math.floor(Math.random() * (baseDamage * 2)) + baseDamage) - targetStats.arm;
-      if(damage < 0){
-        damage = 1;
-      }
-      console.log(damage, baseDamage);
-      targetStats.hp -= damage;
-      if(targetStats.hp < 0){
-        console.log("You have killed the enemy.");
-      }
-    }
-    else {
-      console.log("MISS!");
-    }
-    // we expect target to be the player stats.
-    // before we run this, we would need to calculate which player goes first.
-    }
 }
 
 
-const startBattle = (enemyData, playerData) => {
-  //const enemy = new Enemy(enemyData);
-  //enemy.attack(playerData);
+const startBattle = (enemyData, hero) => {
+  const enemy = new Enemy(enemyData);
   debugger;
+  while(enemy.alive && hero.alive){
+    let enemyFaster;
+    if(enemy.stats.dex > hero.stats.dex){
+      enemyFaster = true;
+    } else {
+      enemyFaster = false;
+    }
+    if((Math.floor(Math.random() * 10)) === 1){
+      enemyFaster = !enemyFaster;
+    }
+    if(enemyFaster){
+      enemy.attack(hero);
+      hero.alive ? hero.attack(enemy) : logToBox("THOU ART DEAD!");
+    } else { 
+      hero.attack(enemy);
+      enemy.alive ? enemy.attack(hero) : logToBox("THOU HAST KILLED THE {THINGEY}");
+    }
+  }
+  if(!enemy.alive){
+    logToBox(`YOU HAVE DEFEATED THE ${enemy.name}`);
+  }
 }
   // Take player stats and battle. 
 let dummyEnemyStats = {
