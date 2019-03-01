@@ -7,6 +7,10 @@
     <div id="mapbox">
       <span id="player_id" style="display:none;">{{ player_id }}</span>
       <div id="textBox"></div>
+      <div id="enemyDialog" style="display:none;">
+        <button id="attack">ATTACK!</button>
+        <button id="run">RUN AWAY</button>
+      </div>
       <button id="game">START THE GAME!</button>
       <canvas id="canvas" width="600" height="400"></canvas>
       <!-- <img src="/static/tiles.png"/> -->
@@ -15,8 +19,7 @@
         <h2>MUTATION:<span id="mutation"></span></h2>
         <h2>REGENT: <span id="regent"></span></h2>
         <h2>STATUS: <span id="alive"></span></h2>
-      </div>
-    
+      </div> 
     </div>
 <div style="display:none;">
   <img id="sprites"
