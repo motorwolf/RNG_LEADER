@@ -220,10 +220,10 @@ class Player {
     this.name = data.name;
     this.stats = data.stats;
     this.alive = true;
+    //this.attack = this.attack.bind(this);
   }
 
   attack(target) {
-    debugger;
     let hitSuccess;
     let damage;
     let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 
@@ -238,10 +238,10 @@ class Player {
         damage = 1;
       }
       console.log(damage, baseDamage);
-      logToBox(`The ${self.name} hits for ${damage} damage!`);
+      logToBox(`${this.name.toUpperCase()} hits for ${damage} damage!`);
       target.stats.hp -= damage;
       if(target.stats.hp < 0){
-        logToBox('It is a critical hit.')
+        logToBox('The death blow has been delivered.')
         console.log("You have killed the enemy.");
         target.alive = false;
       }
@@ -272,6 +272,30 @@ class Enemy extends Player {
     // Do we need speed to calculate who goes first?
   }
 }
+const renderEnemyDialog = () => {
+  let sx = 64; // x axis coordinate - source
+  let sy = 0; // y axis coordinate - source
+  let sWidth = 32; // width of source rect
+  let sHeight = 32; // height of source rect
+  let dx = canvas.width * 0.15; // x axis coord - destination
+  let dy = canvas.height * 0.15; // y axis coord - destination
+  let dWidth = canvas.width * 0.70; // width of destination rect
+  let dHeight = canvas.height * 0.70; // height of destination rect
+  ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  renderEnemy();
+}
+
+const renderEnemy = () => {
+  let sx = 160; // x axis coordinate - source
+  let sy = 0; // y axis coordinate - source
+  let sWidth = 32; // width of source rect
+  let sHeight = 32; // height of source rect
+  let dx = canvas.width * 0.20; // x axis coord - destination
+  let dy = canvas.height * 0.20; // y axis coord - destination
+  let dWidth = canvas.width * 0.60; // width of destination rect
+  let dHeight = canvas.height * 0.60; // height of destination rect
+  ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+}
 
 
 const startBattle = (enemyData, hero) => {
@@ -289,25 +313,21 @@ const startBattle = (enemyData, hero) => {
     }
     if(enemyFaster){
       enemy.attack(hero);
-      hero.alive ? hero.attack(enemy) : logToBox("THOU ART DEAD!");
+      hero.alive ? hero.attack(enemy) : logToBox("You are dead.");
+      // TODO: instead of logging here, I'll probably do something.
     } else { 
       hero.attack(enemy);
-      enemy.alive ? enemy.attack(hero) : logToBox("THOU HAST KILLED THE {THINGEY}");
+      enemy.alive ? enemy.attack(hero) : logToBox("The enemy is dead.");
+      // TODO: do something other than log
     }
   }
   if(!enemy.alive){
-    logToBox(`YOU HAVE DEFEATED THE ${enemy.name}`);
+    logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`);
+    // TODO: Something should happen here.
+  }
+  if(!hero.alive){
+    logToBox(`OH NO! You are dead.`);
+    // TODO: HANDLE your death.
   }
 }
-  // Take player stats and battle. 
-let dummyEnemyStats = {
-    "str": 1,
-    "int": 1,
-    "cha": 1,
-    "dex": 1,
-    "weap": 2,
-    "arm": 1,
-    "hp": 10,
-    "hp_max": 10,
-  };
 
