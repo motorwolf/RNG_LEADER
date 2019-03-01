@@ -206,40 +206,37 @@ const renderPlayer = (x,y) => {
     }
   else if(isBattleTime(10)){
     logToBox('A battle was initiated.');
-    let enemyData = {};
     fetch('/api/get_enemy?level=1')
       .then(response => response.json())
       .then(response => {
-        console.log("HELLOLL+++LL+??");
         console.log(response);
-        enemyData = response;
-        console.log(enemyData);
+        startBattle(response, gameData.stats);
       });
-    console.log(enemyData); // weird. by the time I get to this point in the script, enemyData is blank...
-    let enemyCombatant = new Enemy(enemyData);
-    console.log(enemyCombatant);
-    startBattle();
   };
 }
+class Player {
+  constructor(data){
+    this.name = data.name;
+    this.stats = data.stats;
+    this.alive = true;
+  }
+}
+class Hero extends Player {
+  constructor(data){
+    // current position might make sense here.
+    super(data);
+    this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons.
+  }
+}
 
-class Enemy {
-  constructor(eData){
-    debugger;
-    this.name = eData.name;
-    this.stats = eData.stats;
-    this.exp = eData.exp;
-    this.desc = eData.desc;
+class Enemy extends Player {
+  constructor(data){
+    //this.name = data.name;
+    //this.stats = data.stats;
+      super(data);
+      this.exp = data.exp;
+      this.desc = data.desc;
     // we expect stats to be an object of predictable stats. Do we need level here?
-    //this.str = stats.str;
-    //this.int = stats.int;
-    //this.cha = stats.cha;
-    //this.dex = stats.dex;
-    //this.weap = stats.weap; // will be an array of min, max
-    ////this.spd = stats.spd; speed and agility?
-    //this.arm = stats.arm; 
-    //this.hp = stats.hp_max;
-    //this.hp_max = stats.hp_max; 
-    // experience points given? this could be acalculation based on level
     // Do we need speed to calculate who goes first?
     // Player and enemy will have predictable stats.
   }
@@ -247,7 +244,7 @@ class Enemy {
     debugger;
     let hitSuccess;
     let damage;
-    let hitChance = Math.floor(Math.random() * (this.stats.dex + 20)); 
+    let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 
     if(hitChance > 2){
       hitSuccess = true;
     } // to hit chance
@@ -273,7 +270,11 @@ class Enemy {
 }
 
 
-const startBattle = () => {}
+const startBattle = (enemyData, playerData) => {
+  //const enemy = new Enemy(enemyData);
+  //enemy.attack(playerData);
+  debugger;
+}
   // Take player stats and battle. 
 let dummyEnemyStats = {
     "str": 1,

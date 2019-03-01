@@ -168,7 +168,7 @@ def update_game_and_win():
     if logged_in_and_auth(current_game.player.user.user_id):
         current_game.won = True;
         game.db.session.commit()
-    return 'hi' # need to really do something here!
+    return 'hi' # TODO: need to really do something here!
 
 @app.route('/api/get_enemy', methods=["GET"])
 def return_enemy():

@@ -53,13 +53,13 @@ def load_enemies(file):
             "dex": 0,
             "arm": 0,
             "weap": 0,
+            "hp": 0,
+            "hp_max": 0,
             }
     for row in open(file):
         if "#" not in row:
-            name, level, exp, strength, dex, arm, weap, desc = row.rstrip().split("|")
-            stat_schema["str"] = strength
-            stat_schema["dex"] = dex
-            stat_schema["arm"], stat_schema["weap"] = arm, weap
+            name, level, exp, strength, dex, arm, weap, hp, hp_max, desc = row.rstrip().split("|")
+            stat_schema["str"], stat_schema["dex"], stat_schema["arm"], stat_schema["weap"], stat_schema["hp"], stat_schema["hp_max"] = int(strength), int(dex), int(arm), int(weap), int(hp), int(hp_max)
             new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema, description=desc)
             db.session.add(new_enemy)
     db.session.commit()
