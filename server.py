@@ -91,7 +91,7 @@ def create_player():
     new_player_request = request.get_json()
     name = new_player_request['name']
     mutation_id = random.choice(game.Mutation.query.all()).mutation_id
-    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':20,'int':20,'cha':20,'dex': 20,'hp_max':100,'hp':100,'arm':20,'weap':10})
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':4,'int':4,'cha':20,'dex': 10,'hp_max':100,'hp':100,'arm':10,'weap':2})
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird

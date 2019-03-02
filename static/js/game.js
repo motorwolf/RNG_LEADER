@@ -66,6 +66,7 @@ const isBattleTime = (percent) => {
 
 const startGame = () => {
   gameData['item_collected'] = false;
+  gameData['battle'] = false;
   logToBox(gameData.start_text);
   console.log(statusBox);
   renderMap(gameData.terrain);
@@ -73,26 +74,28 @@ const startGame = () => {
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = [...gameData.start_pos];
   window.addEventListener('keydown', (e) => {
-    switch(e.key){
-      case("ArrowDown"):{
-        e.preventDefault();
-        movePlayer("down", gameData.cur_pos);
-        break;
-      }
-      case("ArrowUp"):{
-        e.preventDefault();
-        movePlayer("up", gameData.cur_pos);
-        break;
-      }
-      case("ArrowLeft"):{
-        e.preventDefault();
-        movePlayer("left", gameData.cur_pos);
-        break;
-      }
-      case("ArrowRight"):{
-        e.preventDefault();
-        movePlayer("right", gameData.cur_pos);
-        break;
+    if(!gameData.battle){
+      switch(e.key){
+        case("ArrowDown"):{
+          e.preventDefault(); // NOTE : This has to be AFTER the keypress! or all keeb shortcuts are USELESS!
+          movePlayer("down", gameData.cur_pos);
+          break;
+        }
+        case("ArrowUp"):{
+          e.preventDefault();
+          movePlayer("up", gameData.cur_pos);
+          break;
+        }
+        case("ArrowLeft"):{
+          e.preventDefault();
+          movePlayer("left", gameData.cur_pos);
+          break;
+        }
+        case("ArrowRight"):{
+          e.preventDefault();
+          movePlayer("right", gameData.cur_pos);
+          break;
+        }
       }
     }
   });
@@ -220,7 +223,6 @@ class Player {
     this.name = data.name;
     this.stats = data.stats;
     this.alive = true;
-    //this.attack = this.attack.bind(this);
   }
 
   attack(target) {
@@ -263,8 +265,6 @@ class Hero extends Player {
 
 class Enemy extends Player {
   constructor(data){
-    //this.name = data.name;
-    //this.stats = data.stats;
       super(data);
       this.exp = data.exp;
       this.desc = data.desc;
@@ -282,11 +282,12 @@ const renderEnemyDialog = () => {
   let dWidth = canvas.width * 0.70; // width of destination rect
   let dHeight = canvas.height * 0.70; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-  renderEnemy();
+  const enemyDialog = document.getElementById("enemyDialog");
+  enemyDialog.style = "display:block";
 }
 
 const renderEnemy = () => {
-  let sx = 160; // x axis coordinate - source
+  let sx = 160; // x axis coordinate - source (WILL BE DEFINED DIFFERENTLY FOR EACH ENEMY...)
   let sy = 0; // y axis coordinate - source
   let sWidth = 32; // width of source rect
   let sHeight = 32; // height of source rect
@@ -297,37 +298,107 @@ const renderEnemy = () => {
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 
-
 const startBattle = (enemyData, hero) => {
+  //debugger;
+  let attackSequence = false;
+  gameData.battle = true;
   const enemy = new Enemy(enemyData);
-  debugger;
-  while(enemy.alive && hero.alive){
+  renderEnemyDialog();
+  renderEnemy();
+  window.addEventListener('keydown', (e) => {
+    console.log(e);
+    switch(e.key){
+      case("ArrowDown"):{
+        e.preventDefault();
+        if(!attackSequence) startAttackSequence('run');
+        console.log("You selected RUN AWAY!!!");
+        break;
+      }
+      case("ArrowUp"):{
+        e.preventDefault();
+        if(!attackSequence) startAttackSequence('attack');
+        break;
+      }
+      case("ArrowLeft"):{
+        e.preventDefault();
+        console.log("this does nothing right now");
+        break;
+      }
+      case("ArrowRight"):{
+        e.preventDefault();
+        console.log("also does nothing.");
+        break;
+      }
+    }
+  });
+  const startAttackSequence = (type) => {
+    debugger;
+    attackSequence = true;
     let enemyFaster;
     if(enemy.stats.dex > hero.stats.dex){
       enemyFaster = true;
-    } else {
+    } 
+    else {
       enemyFaster = false;
     }
-    if((Math.floor(Math.random() * 10)) === 1){
-      enemyFaster = !enemyFaster;
+    if(type === "attack"){
+      if((Math.floor(Math.random() * 10)) === 1){
+        enemyFaster = !enemyFaster;
+      }
+      if(enemyFaster){
+        enemy.attack(hero);
+        if(hero.alive){
+          hero.attack(enemy);
+        }
+        else{
+          logToBox("You are dead.");
+          gameData.battle = false;
+          // TODO : die();
+        }
+        // TODO: instead of logging here, I'll probably do something.
+      } 
+      else { 
+        hero.attack(enemy);
+        if(enemy.alive){
+          enemy.attack(hero);
+        }
+        else {
+          logToBox("The enemy is dead.");
+          gameData.battle = false;
+          // TODO: GIVE POINTS!
+        }
+        // TODO: do something other than log
+      }
+      if(!enemy.alive){
+        logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`);
+        gameData.battle = false;
+        // TODO: Something should happen here.
+      }
+      if(!hero.alive){
+        logToBox(`OH NO! You are dead.`);
+        gameData.battle = false;
+        // TODO: HANDLE your death.
+      }
     }
-    if(enemyFaster){
-      enemy.attack(hero);
-      hero.alive ? hero.attack(enemy) : logToBox("You are dead.");
-      // TODO: instead of logging here, I'll probably do something.
-    } else { 
-      hero.attack(enemy);
-      enemy.alive ? enemy.attack(hero) : logToBox("The enemy is dead.");
-      // TODO: do something other than log
+    if(type === "run"){
+      const diceRoll = Math.floor(Math.random() * 10);
+      if(enemyFaster){
+        if(diceRoll === 1){
+          logToBox("You've run away.");
+          // TODO: END BATTLE!
+        }
+        else{
+          logToBox("You couldn't run away!");
+        }
+      }
+      else {
+        if(diceRoll < 3){
+          logToBox("You've run away!");
+          // TODO: actually run away
+        }
+      }
     }
   }
-  if(!enemy.alive){
-    logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`);
-    // TODO: Something should happen here.
-  }
-  if(!hero.alive){
-    logToBox(`OH NO! You are dead.`);
-    // TODO: HANDLE your death.
-  }
+  attackSequence = false;
 }
 
