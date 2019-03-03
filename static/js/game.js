@@ -214,6 +214,7 @@ const renderPlayer = (x,y) => {
       .then(response => response.json())
       .then(response => {
         console.log(response);
+        debugger;
         startBattle(response, gameData.hero);
       });
   };
@@ -249,7 +250,7 @@ class Player {
       }
     }
     else {
-      logToBox(`${self.name} MISSES!`);
+      logToBox(`${this.name} MISSES!`);
     }
     // we expect target to be the player stats.
     // before we run this, we would need to calculate which player goes first.
@@ -299,7 +300,6 @@ const renderEnemy = () => {
 }
 
 const startBattle = (enemyData, hero) => {
-  //debugger;
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
@@ -307,32 +307,34 @@ const startBattle = (enemyData, hero) => {
   renderEnemy();
   window.addEventListener('keydown', (e) => {
     console.log(e);
-    switch(e.key){
-      case("ArrowDown"):{
-        e.preventDefault();
-        if(!attackSequence) startAttackSequence('run');
-        console.log("You selected RUN AWAY!!!");
-        break;
-      }
-      case("ArrowUp"):{
-        e.preventDefault();
-        if(!attackSequence) startAttackSequence('attack');
-        break;
-      }
-      case("ArrowLeft"):{
-        e.preventDefault();
-        console.log("this does nothing right now");
-        break;
-      }
-      case("ArrowRight"):{
-        e.preventDefault();
-        console.log("also does nothing.");
-        break;
+    if(gameData.battle){
+      switch(e.key){
+        case("ArrowDown"):{
+          e.preventDefault();
+          if(!attackSequence) startAttackSequence('run');
+          console.log("You selected RUN AWAY!!!");
+          break;
+        }
+        case("ArrowUp"):{
+          e.preventDefault();
+          if(!attackSequence) startAttackSequence('attack');
+          break;
+        }
+        case("ArrowLeft"):{
+          e.preventDefault();
+          console.log("this does nothing right now");
+          break;
+        }
+        case("ArrowRight"):{
+          e.preventDefault();
+          console.log("also does nothing.");
+          break;
+        }
       }
     }
   });
   const startAttackSequence = (type) => {
-    debugger;
+    console.log(enemy);
     attackSequence = true;
     let enemyFaster;
     if(enemy.stats.dex > hero.stats.dex){
@@ -370,6 +372,7 @@ const startBattle = (enemyData, hero) => {
         // TODO: do something other than log
       }
       if(!enemy.alive){
+        //debugger;
         logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`);
         gameData.battle = false;
         // TODO: Something should happen here.
@@ -386,6 +389,7 @@ const startBattle = (enemyData, hero) => {
         if(diceRoll === 1){
           logToBox("You've run away.");
           // TODO: END BATTLE!
+          gameData.battle = false;
         }
         else{
           logToBox("You couldn't run away!");
@@ -395,10 +399,16 @@ const startBattle = (enemyData, hero) => {
         if(diceRoll < 3){
           logToBox("You've run away!");
           // TODO: actually run away
+          gameData.battle = false;
         }
       }
     }
+    attackSequence = false;
+    if(!gameData.battle){
+      renderMap(gameData.terrain);
+      renderStartPos(gameData.start_pos);
+      renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+    }
   }
-  attackSequence = false;
 }
 

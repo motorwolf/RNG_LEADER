@@ -148,13 +148,12 @@ class Player(db.Model):
     mutation_id = db.Column(db.Integer, db.ForeignKey('mutations.mutation_id'), nullable=False)
     score = db.Column(db.Integer, nullable=False) 
     stats = db.Column(db.JSON, nullable=False)
-    
+    exp = db.Column(db.Integer, nullable=False)
+    level = db.Column(db.Integer, nullable=False)
 
     collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
     mutation = db.relationship("Mutation", backref = db.backref("players"))
     
-    def assign_stats(self):
-        self.stats = {'will':'this work?'}
 
     def __repr__(self):
         return f"""<Player name={self.name} user_id={self.user_id}>"""
