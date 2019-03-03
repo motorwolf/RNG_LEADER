@@ -91,7 +91,7 @@ def create_player():
     new_player_request = request.get_json()
     name = new_player_request['name']
     mutation_id = random.choice(game.Mutation.query.all()).mutation_id
-    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':2,'int':4,'cha':20,'dex': 10,'hp_max':100,'hp':100,'arm':10,'weap':1})
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':2,'int':4,'cha':20,'dex': 10,'hp_max':100,'hp':100,'arm':10,'weap':1},exp=0,level=1)
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird
@@ -175,6 +175,14 @@ def return_enemy():
     level = int(request.args.get('level'))
     enemy = random.choice(game.Enemy.query.filter(game.Enemy.level == level).all());
     return jsonify(enemy.enemy_attributes())
+
+@app.route('/api/update_exp', methods=["POST"])
+def update_experience():
+    to_update = request.get_json()
+    ###
+    if logged_in_and_auth(player_id):
+        player_to_update = game.Player.get(player_id)
+
 
 def logged_in_and_auth(id_to_check):
     id_to_check = str(id_to_check)

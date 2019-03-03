@@ -214,11 +214,26 @@ const renderPlayer = (x,y) => {
       .then(response => response.json())
       .then(response => {
         console.log(response);
-        debugger;
         startBattle(response, gameData.hero);
       });
   };
 }
+
+const updateExperience = (player_id,enemy_exp) => {
+  let to_update = {
+    player_id: player_id,
+    enemy_exp: enemy_exp,
+  }
+  fetch('/api/update_exp',{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(to_update),
+  }).then(response => response.json())
+    .then(response => {
+      console.log(response);
+    });
+}
+
 class Player {
   constructor(data){
     this.name = data.name;
@@ -367,7 +382,7 @@ const startBattle = (enemyData, hero) => {
         else {
           logToBox("The enemy is dead.");
           gameData.battle = false;
-          // TODO: GIVE POINTS!
+          updateExperience();
         }
         // TODO: do something other than log
       }
