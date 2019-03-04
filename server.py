@@ -179,9 +179,12 @@ def return_enemy():
 @app.route('/api/update_exp', methods=["POST"])
 def update_experience():
     to_update = request.get_json()
-    ###
-    if logged_in_and_auth(player_id):
-        player_to_update = game.Player.get(player_id)
+    player_to_update = game.Player.query.get(to_update['player_id']);
+    if logged_in_and_auth(player_to_update.user.user_id):
+        player_to_update.exp += to_update['enemy_exp']
+        #TODO: Add a level check here. Not sure where the level check will come from, or how it will be calculated. Maybe divided by something? Then we would need to have a stat advancer for the level upgrade.
+        game.db.session.commit()
+    return "OK"
 
 
 def logged_in_and_auth(id_to_check):

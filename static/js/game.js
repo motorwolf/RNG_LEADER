@@ -14,6 +14,7 @@ spriteSheet.onload = function() {
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
   const id = document.getElementById('player_id').textContent;
+  gameData['player_id'] = id;
   console.log(id);
   fetch(`/api/${id}/start_game`)
     .then(response => response.json())
@@ -209,8 +210,21 @@ const renderPlayer = (x,y) => {
       }
     }
   else if(isBattleTime(10)){
+    // is this a weird place to check this? perhaps it should go AFTER this function in the movefunction
     logToBox('A battle was initiated.');
-    fetch('/api/get_enemy?level=1')
+    const diceRoll = Math.floor(Math.random() * 10);
+    let offset = 0;
+    if(diceRoll === 1){
+      offset += 1;
+    }
+    if(diceRoll === 2){
+      offset -= 1;
+    }
+    let enemyLevel = gameData.hero.level + offset;
+    if(enemyLevel < 1){
+      enemyLevel = 1;
+    }
+    fetch(`/api/get_enemy?level=1`)  //${enemyLevel}`) TODO after making enemies for other levels...
       .then(response => response.json())
       .then(response => {
         console.log(response);
@@ -221,14 +235,15 @@ const renderPlayer = (x,y) => {
 
 const updateExperience = (player_id,enemy_exp) => {
   let to_update = {
-    player_id: player_id,
+    player_id: player_id.textContent,
     enemy_exp: enemy_exp,
   }
   fetch('/api/update_exp',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(to_update),
-  }).then(response => response.json())
+  })
+  //.then(response => response.json()) //TODO: determine what kind of response we want to send back, if any.
     .then(response => {
       console.log(response);
     });
@@ -276,6 +291,7 @@ class Hero extends Player {
     // current position might make sense here.
     super(data);
     this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons. One day it will do stuff?
+    this.level = data.player_level;
   }
 }
 
@@ -318,6 +334,7 @@ const startBattle = (enemyData, hero) => {
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
+  console.log(enemy);
   renderEnemyDialog();
   renderEnemy();
   window.addEventListener('keydown', (e) => {
@@ -349,6 +366,7 @@ const startBattle = (enemyData, hero) => {
     }
   });
   const startAttackSequence = (type) => {
+    //debugger;
     console.log(enemy);
     attackSequence = true;
     let enemyFaster;
@@ -382,7 +400,8 @@ const startBattle = (enemyData, hero) => {
         else {
           logToBox("The enemy is dead.");
           gameData.battle = false;
-          updateExperience();
+          const id = document.getElementById('player_id');
+          updateExperience(id,enemy.exp);
         }
         // TODO: do something other than log
       }

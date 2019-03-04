@@ -102,6 +102,7 @@ class Game(db.Model):
                 "name": self.player.name,
                 "mutation": self.player.mutation.name,
                 "stats": self.player.stats,
+                "player_level": self.player.level,
                 }
         def int_lst_to_str(lst):
             """ Utility to convert a list of numbers to a joined string"""
