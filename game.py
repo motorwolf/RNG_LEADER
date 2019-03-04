@@ -159,7 +159,24 @@ class Player(db.Model):
     def __repr__(self):
         return f"""<Player name={self.name} user_id={self.user_id}>"""
     
-    
+    def do_i_level_up(self):
+        """ Checks to see if a player is eligible for the next level. """
+        base = 15
+        for level in range(1,self.level + 2):
+            base *= level
+        if self.exp > base:
+            self.level += 1
+            db.session.commit()
+            # sometimes, you might have a giant exp increase where you'd level again, so we run the function again
+            return True
+        if self.exp < base:
+            return False 
+
+    def level_up_stats(self):
+        """ Update stats after level increase. """
+        # TODO : in the future I might amend these for player classes, but right now we are just incrementing as we go.
+        breakpoint()
+        return "Hi"
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """

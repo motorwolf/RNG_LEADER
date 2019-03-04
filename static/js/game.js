@@ -13,18 +13,25 @@ spriteSheet.onload = function() {
 
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
-  const id = document.getElementById('player_id').textContent;
-  gameData['player_id'] = id;
-  console.log(id);
-  fetch(`/api/${id}/start_game`)
-    .then(response => response.json())
-    .then(response => {
-      gameData = response;
-      localStorage.setItem('gameData',JSON.stringify(response));
-      gameData.hero = new Hero(gameData);
-      console.log(response);
-      startGame();
-    });
+  if(gameData['active_game'] == undefined){
+    const id = document.getElementById('player_id').textContent;
+    gameData['player_id'] = id;
+    console.log(id);
+    fetch(`/api/${id}/start_game`)
+      .then(response => response.json())
+      .then(response => {
+        gameData = response;
+        localStorage.setItem('gameData',JSON.stringify(response));
+        gameData.hero = new Hero(gameData);
+        console.log(response);
+        startGame();
+      });
+    gameInitButton.style = 'display:none';
+  }
+  else {
+    // TODO: handle this -- although the button should not be there if there is a game in progress.
+    console.log("A game is already in progress.");
+  }
 });
 
 const logToBox = (html) => {
@@ -66,6 +73,7 @@ const isBattleTime = (percent) => {
 }
 
 const startGame = () => {
+  gameData['active_game'] = true;
   gameData['item_collected'] = false;
   gameData['battle'] = false;
   logToBox(gameData.start_text);
@@ -243,7 +251,7 @@ const updateExperience = (player_id,enemy_exp) => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(to_update),
   })
-  //.then(response => response.json()) //TODO: determine what kind of response we want to send back, if any.
+  .then(response => response.json())//TODO: determine what kind of response we want to send back, if any.
     .then(response => {
       console.log(response);
     });
@@ -338,7 +346,6 @@ const startBattle = (enemyData, hero) => {
   renderEnemyDialog();
   renderEnemy();
   window.addEventListener('keydown', (e) => {
-    console.log(e);
     if(gameData.battle){
       switch(e.key){
         case("ArrowDown"):{
