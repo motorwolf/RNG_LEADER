@@ -354,7 +354,6 @@ const startBattle = (enemyData, hero) => {
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
-  console.log(enemy);
   renderEnemyDialog();
   renderEnemy();
   enemyDialog.style = 'display:block';
@@ -365,9 +364,6 @@ const startBattle = (enemyData, hero) => {
   if(!attackSequence) { run.addEventListener('click', functionList[1]);}
   
   const startAttackSequence = (type, enemy) => {
-    console.log('attack seq started');
-    debugger;
-    console.log(enemy);
     attackSequence = true;
     attack.disabled = true;
     run.disabled = true;
