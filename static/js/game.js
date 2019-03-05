@@ -236,7 +236,7 @@ const renderPlayer = (x,y) => {
       .then(response => response.json())
       .then(response => {
         console.log(response);
-        startBattle(response, gameData.hero);
+        startBattle(response,gameData.hero);
       });
   };
 }
@@ -256,6 +256,7 @@ const updateExperience = (player_id,enemy_exp) => {
     if(response['updated']){
       logToBox(`YOU HAVE ADVANCED TO LEVEL ${response.level}!! YOUR STATS HAVE GONE UP!`);
       for(stat in gameData.hero.stats){
+        //debugger;
         // TODO : it might be nice to spell out STRENGTH, DEXTERITY, etc, rather than using the abbrs.
         const difference = response.stats[stat] - gameData.hero.stats[stat];
         if (difference !== 0){
@@ -348,6 +349,7 @@ const renderEnemy = () => {
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 
+
 const startBattle = (enemyData, hero) => {
   let attackSequence = false;
   gameData.battle = true;
@@ -355,37 +357,20 @@ const startBattle = (enemyData, hero) => {
   console.log(enemy);
   renderEnemyDialog();
   renderEnemy();
-  window.addEventListener('keydown', (e) => {
-    if(gameData.battle){
-      switch(e.key){
-        case("ArrowDown"):{
-          e.preventDefault();
-          if(!attackSequence) startAttackSequence('run');
-          console.log("You selected RUN AWAY!!!");
-          break;
-        }
-        case("ArrowUp"):{
-          e.preventDefault();
-          if(!attackSequence) startAttackSequence('attack');
-          break;
-        }
-        case("ArrowLeft"):{
-          e.preventDefault();
-          console.log("this does nothing right now");
-          break;
-        }
-        case("ArrowRight"):{
-          e.preventDefault();
-          console.log("also does nothing.");
-          break;
-        }
-      }
-    }
-  });
-  const startAttackSequence = (type) => {
-    //debugger;
+  enemyDialog.style = 'display:block';
+  const attack = document.getElementById('attack');
+  const run = document.getElementById('run');
+  const functionList = [() => startAttackSequence('attack',enemy),() => startAttackSequence('run',enemy)];
+  if(!attackSequence) { attack.addEventListener('click', functionList[0]) };
+  if(!attackSequence) { run.addEventListener('click', functionList[1]);}
+  
+  const startAttackSequence = (type, enemy) => {
+    console.log('attack seq started');
+    debugger;
     console.log(enemy);
     attackSequence = true;
+    attack.disabled = true;
+    run.disabled = true;
     let enemyFaster;
     if(enemy.stats.dex > hero.stats.dex){
       enemyFaster = true;
@@ -455,11 +440,43 @@ const startBattle = (enemyData, hero) => {
       }
     }
     attackSequence = false;
+    attack.disabled = false;
+    run.disabled = false;
     if(!gameData.battle){
       renderMap(gameData.terrain);
       renderStartPos(gameData.start_pos);
       renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
+      attack.removeEventListener('click', functionList[0]);
+      run.removeEventListener('click', functionList[1]);
     }
   }
+  // window.addEventListener('keydown', (e) => {
+  //   if(gameData.battle){
+  //     switch(e.key){
+  //       case("ArrowDown"):{
+  //         e.preventDefault();
+  //         if(!attackSequence) startAttackSequence('run');
+  //         console.log("You selected RUN AWAY!!!");
+  //         break;
+  //       }
+  //       case("ArrowUp"):{
+  //         e.preventDefault();
+  //         console.log("BATTLE BEGINS");
+  //         if(!attackSequence) startAttackSequence('attack');
+  //         break;
+  //       }
+  //       case("ArrowLeft"):{
+  //         e.preventDefault();
+  //         console.log("this does nothing right now");
+  //         break;
+  //       }
+  //       case("ArrowRight"):{
+  //         e.preventDefault();
+  //         console.log("also does nothing.");
+  //         break;
+  //       }
+  //     }
+  //   }
+  // });
 }
 

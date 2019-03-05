@@ -175,6 +175,7 @@ class Player(db.Model):
     def level_up_stats(self):
         """ Update stats after level increase. """
         # TODO : in the future I might amend these for player classes, but right now we are just incrementing as we go.
+        #breakpoint()
         self.stats['hp_max'] += math.floor(self.stats['hp_max'] * 0.25)
         self.stats['str'] += random.randint(1,2)
         self.stats['dex'] += 1
@@ -184,7 +185,9 @@ class Player(db.Model):
         if(bonus_point == 10):
                 stats = ['str', 'dex', 'arm', 'weap']
                 self.stats[random.choice(stats)] += 1
-        return ""
+        #breakpoint()
+        db.session.commit()
+        return self.stats 
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """
