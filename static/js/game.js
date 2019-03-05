@@ -251,10 +251,20 @@ const updateExperience = (player_id,enemy_exp) => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(to_update),
   })
-  .then(response => response.json())//TODO: determine what kind of response we want to send back, if any.
-    .then(response => {
-      console.log(response);
-    });
+  .then(response => response.json())
+  .then(response => {
+    if(response['updated']){
+      logToBox(`YOU HAVE ADVANCED TO LEVEL ${response.level}!! YOUR STATS HAVE GONE UP!`);
+      for(stat in gameData.hero.stats){
+        // TODO : it might be nice to spell out STRENGTH, DEXTERITY, etc, rather than using the abbrs.
+        const difference = response.stats[stat] - gameData.hero.stats[stat];
+        if (difference !== 0){
+          logToBox(`Your ${stat.toUpperCase()} has increased by ${difference}.`);
+        }
+      }
+      gameData.hero.stats = response.stats;
+    }
+  });
 }
 
 class Player {
