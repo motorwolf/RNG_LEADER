@@ -200,7 +200,8 @@ const renderPlayer = (x,y) => {
   
   if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
     if(gameData.item_collected){
-        // Do something. Namely, you will return the item to your regent.
+      // Do something. Namely, you will return the item to your regent.
+        gameData.hero.heal()
         logToBox('<p>YES! You delivered the thing!</p>');
         fetch(`/api/game_won`,{
           method: 'POST',
@@ -300,6 +301,11 @@ class Hero extends Player {
     super(data);
     this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons. One day it will do stuff?
     this.level = data.player_level;
+  }
+  heal(){
+    this.stats.hp = this.stats.hp_max;
+    logToBox(`You return to ${gameData.regent}'s castle. They summon their remaining powers to heal you.`);
+    // TODO LOW: this could be affected by regent attitude, with cha being an offset.
   }
 }
 

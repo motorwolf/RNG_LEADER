@@ -126,7 +126,8 @@ def begin_game(player_id):
             new_item = random.choice(new_items)
         else:
             new_item = game.Item.query.filter(game.Item.name == "Future Tech").first().item_id
-        new_game = game.Game(regent_id=1,item_id=new_item,player_id=player_id,won=False, item_collected=False)
+        random_regent = random.choice(game.Regent.query.all()).regent_id
+        new_game = game.Game(regent_id=random_regent,item_id=new_item,player_id=player_id,won=False, item_collected=False)
         new_game.assign_map_attributes(20,20)
         game.db.session.add(new_game)
         game.db.session.commit()
@@ -151,9 +152,13 @@ def item_collected(player_id):
     """ The player has collected the item. We will add it to their collection. """
     game_data = request.get_json()
     cur_game = game.Game.query.get(game_data['game_id'])
-    if str(cur_game.player.user.user_id) == session['user_id'] and session['logged_in']:
+    if logged_in_and_auth(cur_game.player.user.user_id):
         collected_item = game.Collected_Item(item_id = cur_game.item.item_id, player_id = cur_game.player.player_id, date_collected = datetime.now())
         game.db.session.add(collected_item)
+        modifier = len(game.Collected_Item.query.filter(game.Collected_Item.player_id == cur_game.player.player_id).all())
+        if modifier == 0:
+            modifier = 1;
+        cur_game.player.score += 500 * modifier
         cur_game.item_collected = True
         game.db.session.commit()
     else:
@@ -165,10 +170,19 @@ def update_game_and_win():
     """ The player has brought the item to the beginning square, and has won the game."""
     game_info = request.get_json()
     current_game = game.Game.query.get(game_info['game_id'])
-    if logged_in_and_auth(current_game.player.user.user_id):
+    user_id = current_game.player.user.user_id
+    if logged_in_and_auth(user_id):
         current_game.won = True;
+        modifier = len(game.Game.query.filter(game.Game.won == True and game.Game.user_id == user_id).all())
+        if modifier == 0:
+            modifier = 1
+        current_game.player.score += 1000 * modifier
         game.db.session.commit()
-    return 'hi' # TODO: need to really do something here!
+    return redirect('/congrats') 
+
+@app.route('/congrats')
+def win_game():
+    return render_template('congrats.html')
 
 @app.route('/api/get_enemy', methods=["GET"])
 def return_enemy():
