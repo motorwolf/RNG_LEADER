@@ -1,11 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
   HELLO USER! You have logged in.
-  {% if not players %}
-  <p> You have not created any players. </p>
+  {% if not alive_players %}
+    {% if not dead_players %}
+      <p> You have not created any players. </p>
+    {% endif %}
+    <p> All your players are dead! </p>
   {% endif %}
-  {% for player in players:%}
-  <a href="/user/{{user_id}}/player/{{player.player_id}}">{{player.name}}</a>
+  <h2> PLAYERS </h2>
+  {% for player in alive_players:%}
+    <a href="/user/{{user_id}}/player/{{player.player_id}}">{{player.name}}</a>
+  {% endfor %}
+  <h2> DEAD PLAYERS </h2>
+  {% for player in dead_players:%}
+    <a href="/grave/player/{{player_player_id}}">{{player.name}}'s grave </a>
   {% endfor %}
   <br>
   CREATE NEW PLAYER!

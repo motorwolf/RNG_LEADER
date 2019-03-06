@@ -72,12 +72,21 @@ def user_sign_up():
 @app.route('/user/<user_id>')
 def show_user_info(user_id):
     """ Displays a user information page that will show all players that the user has created. """
+    # TODO LOW : this could be cleaned up with our logged in function.
     session_id = session['user_id']
     if session['logged_in']:
         if user_id == session_id:
             user = game.User.query.filter(game.User.user_id == session_id).first()
-            players = user.players
-            return render_template("user.html", players = players, user_id = user_id)
+            #players = user.players
+            alive_players = []
+            dead_players = []
+            for player in user.players:
+                if player.alive:
+                    alive_players.append(player)
+                if player.alive == False:
+                    dead_players.append(player)
+
+            return render_template("user.html", alive_players = alive_players,dead_players = dead_players, user_id = user_id)
         else:
             #TODO : You can't see this page.
             return redirect("/login")
@@ -187,6 +196,19 @@ def update_game_and_win():
 # def win_game():
 #     return render_template('congrats.html')
 # SHELVED FOR A FUTURE RELEASE
+
+@app.route('/api/die', methods=["POST"])
+def kill_player():
+    """ Kill the player :( """
+    game_data = request.get_json()
+    # TODO LOW : Make sure that the alive attribute is false, so we can't just go slaughtering innocents. But for testing, I'll allow it.
+    # if game_data['hero']['alive'] == False:
+    cur_game = game.Game.query.get(game_data['game_id'])
+    user_id = cur_game.player.user.user_id
+    if logged_in_and_auth(user_id):
+        cur_game.player.alive = False
+        game.db.session.commit()
+    return jsonify(user_id)
 
 @app.route('/api/get_enemy', methods=["GET"])
 def return_enemy():

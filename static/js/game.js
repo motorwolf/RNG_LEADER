@@ -264,6 +264,18 @@ const updateExperience = (player_id,enemy_exp) => {
   });
 }
 
+const die = () => {
+  fetch('/api/die', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(gameData),
+  })
+  .then(response => response.json())
+  .then(response => {
+    window.location.href = `/user/${response}`;
+  })
+}
+
 class Player {
   constructor(data){
     this.name = data.name;
