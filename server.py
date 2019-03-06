@@ -178,16 +178,14 @@ def return_enemy():
 
 @app.route('/api/update_exp', methods=["POST"])
 def update_experience():
-    breakpoint()
     to_update = request.get_json()
     player_to_update = game.Player.query.get(to_update['player_id']);
     if logged_in_and_auth(player_to_update.user.user_id):
-        player_to_update.level = 1 #TEST! DELETE LATER
-        player_to_update.exp = 29 # TEST! DELETE LATER
+        #player_to_update.level = 1 #TEST! DELETE LATER
+        #player_to_update.exp = 29 # TEST! DELETE LATER
         player_to_update.exp += to_update['enemy_exp']
-        #TODO: Add a level check here. Not sure where the level check will come from, or how it will be calculated. Maybe divided by something? Then we would need to have a stat advancer for the level upgrade.
+        player_to_update.score += to_update['enemy_exp'] * 2
         updated_stats = {}
-        #game.db.session.commit()
         if player_to_update.do_i_level_up():
             new_stats = player_to_update.level_up_stats()
             updated_stats = {
@@ -200,7 +198,7 @@ def update_experience():
         else:
             updated_stats = {'updated': False};
         return jsonify(updated_stats)
-    #handle you not being logged in
+    #TODO: handle you not being logged in
     return "You are not logged in"
 
 

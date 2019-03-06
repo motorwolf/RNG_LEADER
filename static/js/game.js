@@ -16,14 +16,12 @@ gameInitButton.addEventListener('click', (e) => {
   if(gameData['active_game'] == undefined){
     const id = document.getElementById('player_id').textContent;
     gameData['player_id'] = id;
-    console.log(id);
     fetch(`/api/${id}/start_game`)
       .then(response => response.json())
       .then(response => {
         gameData = response;
         localStorage.setItem('gameData',JSON.stringify(response));
         gameData.hero = new Hero(gameData);
-        console.log(response);
         startGame();
       });
     gameInitButton.style = 'display:none';
@@ -77,7 +75,6 @@ const startGame = () => {
   gameData['item_collected'] = false;
   gameData['battle'] = false;
   logToBox(gameData.start_text);
-  console.log(statusBox);
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
@@ -219,7 +216,6 @@ const renderPlayer = (x,y) => {
     }
   else if(isBattleTime(10)){
     // is this a weird place to check this? perhaps it should go AFTER this function in the movefunction
-    logToBox('A battle was initiated.');
     const diceRoll = Math.floor(Math.random() * 10);
     let offset = 0;
     if(diceRoll === 1){
@@ -235,7 +231,6 @@ const renderPlayer = (x,y) => {
     fetch(`/api/get_enemy?level=1`)  //${enemyLevel}`) TODO after making enemies for other levels...
       .then(response => response.json())
       .then(response => {
-        console.log(response);
         startBattle(response,gameData.hero);
       });
   };
@@ -256,10 +251,9 @@ const updateExperience = (player_id,enemy_exp) => {
     if(response['updated']){
       logToBox(`YOU HAVE ADVANCED TO LEVEL ${response.level}!! YOUR STATS HAVE GONE UP!`);
       for(stat in gameData.hero.stats){
-        //debugger;
-        // TODO : it might be nice to spell out STRENGTH, DEXTERITY, etc, rather than using the abbrs.
+        // TODO LOW: it might be nice to spell out STRENGTH, DEXTERITY, etc, rather than using the abbrs.
         const difference = response.stats[stat] - gameData.hero.stats[stat];
-        if (difference !== 0){
+        if (difference !== 0 && stat !== "hp"){
           logToBox(`Your ${stat.toUpperCase()} has increased by ${difference}.`);
         }
       }
@@ -283,31 +277,26 @@ class Player {
       hitSuccess = true;
     } // to hit chance
     if(hitSuccess){
-      let baseDamage = this.stats.weap + (this.stats.str/2);
-      console.log(baseDamage);
+      let baseDamage = Math.floor(this.stats.weap + (this.stats.str/2));
       let damage = (Math.floor(Math.random() * (baseDamage * 2)) + baseDamage) - target.stats.arm;
       if(damage < 0){
         damage = 1;
       }
-      console.log(damage, baseDamage);
       logToBox(`${this.name.toUpperCase()} hits for ${damage} damage!`);
       target.stats.hp -= damage;
       if(target.stats.hp < 0){
         logToBox('The death blow has been delivered.')
-        console.log("You have killed the enemy.");
         target.alive = false;
       }
     }
     else {
       logToBox(`${this.name} MISSES!`);
     }
-    // we expect target to be the player stats.
-    // before we run this, we would need to calculate which player goes first.
     }
 }
 class Hero extends Player {
   constructor(data){
-    // current position might make sense here.
+    // TODO: current position might make sense here.
     super(data);
     this.mutation = data.mutation; // this is the mutation name only right now, for cosmetic reasons. One day it will do stuff?
     this.level = data.player_level;
@@ -319,8 +308,6 @@ class Enemy extends Player {
       super(data);
       this.exp = data.exp;
       this.desc = data.desc;
-    // we expect stats to be an object of predictable stats. Do we need level here?
-    // Do we need speed to calculate who goes first?
   }
 }
 const renderEnemyDialog = () => {
@@ -354,6 +341,7 @@ const startBattle = (enemyData, hero) => {
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
+  logToBox(`A ${enemy.name.toUpperCase()} draws near.`);
   renderEnemyDialog();
   renderEnemy();
   enemyDialog.style = 'display:block';
@@ -439,6 +427,7 @@ const startBattle = (enemyData, hero) => {
     attack.disabled = false;
     run.disabled = false;
     if(!gameData.battle){
+      enemyDialog.style = "display:none";
       renderMap(gameData.terrain);
       renderStartPos(gameData.start_pos);
       renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
@@ -446,33 +435,5 @@ const startBattle = (enemyData, hero) => {
       run.removeEventListener('click', functionList[1]);
     }
   }
-  // window.addEventListener('keydown', (e) => {
-  //   if(gameData.battle){
-  //     switch(e.key){
-  //       case("ArrowDown"):{
-  //         e.preventDefault();
-  //         if(!attackSequence) startAttackSequence('run');
-  //         console.log("You selected RUN AWAY!!!");
-  //         break;
-  //       }
-  //       case("ArrowUp"):{
-  //         e.preventDefault();
-  //         console.log("BATTLE BEGINS");
-  //         if(!attackSequence) startAttackSequence('attack');
-  //         break;
-  //       }
-  //       case("ArrowLeft"):{
-  //         e.preventDefault();
-  //         console.log("this does nothing right now");
-  //         break;
-  //       }
-  //       case("ArrowRight"):{
-  //         e.preventDefault();
-  //         console.log("also does nothing.");
-  //         break;
-  //       }
-  //     }
-  //   }
-  // });
 }
 
