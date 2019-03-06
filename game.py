@@ -166,7 +166,7 @@ class Player(db.Model):
             base *= level
         if self.exp > base:
             self.level += 1
-            db.session.commit()
+            #db.session.commit()
             # sometimes, you might have a giant exp increase where you'd level again, so we run the function again
             return True
         if self.exp < base:
@@ -175,19 +175,20 @@ class Player(db.Model):
     def level_up_stats(self):
         """ Update stats after level increase. """
         # TODO : in the future I might amend these for player classes, but right now we are just incrementing as we go.
-        #breakpoint()
-        self.stats['hp_max'] += math.floor(self.stats['hp_max'] * 0.25)
-        self.stats['str'] += random.randint(1,2)
-        self.stats['dex'] += 1
-        self.stats['arm'] += 1
-        self.stats['weap'] += 1
+        current_stats = self.stats.copy()
+        current_stats['hp_max'] += math.floor(current_stats['hp_max'] * 0.25)
+        current_stats['str'] += random.randint(1,2)
+        current_stats['dex'] += 1
+        current_stats['arm'] += 1
+        current_stats['weap'] += 1
         bonus_point = random.randint(1,10)
         if(bonus_point == 10):
                 stats = ['str', 'dex', 'arm', 'weap']
-                self.stats[random.choice(stats)] += 1
-        #breakpoint()
+                current_stats[random.choice(stats)] += 1
+        self.stats = current_stats
+        db.session.add(self)
         db.session.commit()
-        return self.stats 
+        return self.stats
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """
