@@ -66,7 +66,8 @@ const isBattleTime = (percent) => {
     return false;
   }
   else{
-    return true;
+    ///// TESTING ON! OTHERWISE THIS SHOULD BE TRUE
+    return false;
   }
 }
 
@@ -208,10 +209,10 @@ const renderPlayer = (x,y) => {
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(gameData),
         })
+        .then(response => response.json())
         .then(response => {
-          if(response.ok){
-            console.log(response);
-          }
+          console.log(response);
+          window.location.href = `../${response}`;
         });
       }
     }

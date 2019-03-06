@@ -171,6 +171,7 @@ def update_game_and_win():
     game_info = request.get_json()
     current_game = game.Game.query.get(game_info['game_id'])
     user_id = current_game.player.user.user_id
+    player_id = current_game.player.player_id
     if logged_in_and_auth(user_id):
         current_game.won = True;
         modifier = len(game.Game.query.filter(game.Game.won == True and game.Game.user_id == user_id).all())
@@ -178,11 +179,14 @@ def update_game_and_win():
             modifier = 1
         current_game.player.score += 1000 * modifier
         game.db.session.commit()
-    return redirect('/congrats') 
+    # TODO LOW: Add story block
+    # TODO HIGH: FLASH YOU WON MESSAGE!
+    return jsonify(player_id) 
 
-@app.route('/congrats')
-def win_game():
-    return render_template('congrats.html')
+# @app.route('/congrats')
+# def win_game():
+#     return render_template('congrats.html')
+# SHELVED FOR A FUTURE RELEASE
 
 @app.route('/api/get_enemy', methods=["GET"])
 def return_enemy():
