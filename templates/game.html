@@ -6,6 +6,13 @@
     <h1>THE GAME</h1>
     <div id="mapbox">
       <span id="player_id" style="display:none;">{{ player_id }}</span>
+      <div id="playerData">
+        HP:<span id="stat_hp"></span>/<span id="stat_hp_max"></span>
+        <br>
+        STR:<span id="stat_str"></span>&nbsp;DEX:<span id="stat_dex"></span>&nbsp;INT:<span id="stat_int"></span>&nbsp;CHA:<span id="stat_cha"></span>
+        <br>
+        ARMOR:<span id="stat_arm"></span>&nbsp;WEAPON:<span id="stat_weap"></span>
+      </div>
       <div id="textBox"></div>
       <div id="enemyDialog" style="display:none;">
         <button id="attack">ATTACK!</button>
@@ -14,7 +21,7 @@
       <button id="game">START THE GAME!</button>
       <canvas id="canvas" width="600" height="400"></canvas>
       <!-- <img src="/static/tiles.png"/> -->
-      <div id="statusBox">
+      <div id="gameData">
         <h2>NAME:<span id="name"></span></h2>
         <h2>MUTATION:<span id="mutation"></span></h2>
         <h2>REGENT: <span id="regent"></span></h2>
