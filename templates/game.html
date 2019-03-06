@@ -3,15 +3,20 @@
   <header>
   </header>
   <main>
-    <h1>THE GAME</h1>
     <div id="mapbox">
       <span id="player_id" style="display:none;">{{ player_id }}</span>
       <div id="playerData">
+        <h2><span id="name"></span></h2>
+        LEVEL:<span id="level"></span>&nbsp;EXP:<span id="exp"></span>
+        <br>
+        SCORE:<span id="score"></span>
+        <br>
         HP:<span id="stat_hp"></span>/<span id="stat_hp_max"></span>
         <br>
         STR:<span id="stat_str"></span>&nbsp;DEX:<span id="stat_dex"></span>&nbsp;INT:<span id="stat_int"></span>&nbsp;CHA:<span id="stat_cha"></span>
         <br>
         ARMOR:<span id="stat_arm"></span>&nbsp;WEAPON:<span id="stat_weap"></span>
+
       </div>
       <div id="textBox"></div>
       <div id="enemyDialog" style="display:none;">

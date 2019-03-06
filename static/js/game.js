@@ -15,7 +15,6 @@ const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
   if(gameData['active_game'] == undefined){
     const id = document.getElementById('player_id').textContent;
-    gameData['player_id'] = id;
     fetch(`/api/${id}/start_game`)
       .then(response => response.json())
       .then(response => {
@@ -75,6 +74,7 @@ const startGame = () => {
   gameData['active_game'] = true;
   gameData['item_collected'] = false;
   gameData['battle'] = false;
+  gameData['player_id'] = parseInt(document.getElementById('player_id').textContent);
   logToBox(gameData.start_text);
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
@@ -274,6 +274,32 @@ const die = () => {
   .then(response => {
     window.location.href = `/user/${response}`;
   })
+}
+
+const getStats = (player_id) => {
+  fetch(`/api/get_stats/${player_id}`)
+    .then(response => response.json())
+    .then(response => {
+      outputStats(response);
+    });
+}
+
+const outputStats = (stats) => {
+  for(const stat in stats){
+    //console.log(stat);
+    if(stat == 'stats'){
+      // we will need to loop through specially
+      for(let inner_stat in stats[stat]){
+        const id = "stat_" + inner_stat;
+        let target = document.getElementById(id);
+        target.textContent = stats[stat][inner_stat];
+      }
+    }
+    else {
+      let target = document.getElementById(stat);
+      target.textContent = stats[stat];
+    }
+  }
 }
 
 class Player {

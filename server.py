@@ -85,7 +85,6 @@ def show_user_info(user_id):
                     alive_players.append(player)
                 if player.alive == False:
                     dead_players.append(player)
-
             return render_template("user.html", alive_players = alive_players,dead_players = dead_players, user_id = user_id)
         else:
             #TODO : You can't see this page.
@@ -240,6 +239,21 @@ def update_experience():
         return jsonify(updated_stats)
     #TODO: handle you not being logged in
     return "You are not logged in"
+
+@app.route('/api/get_stats/<player_id>')
+def deliver_stats(player_id):
+    """ Gets stats from the db and delivers them to be neatly formatted."""
+    player = game.Player.query.get(player_id)
+    player_info = {
+            'alive': player.alive,
+            'name': player.name,
+            'mutation': player.mutation.name,
+            'score': player.score,
+            'stats': player.stats,
+            'level': player.level,
+            'exp': player.exp,
+            }
+    return jsonify(player_info)
 
 
 def logged_in_and_auth(id_to_check):
