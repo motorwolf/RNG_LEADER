@@ -142,11 +142,11 @@ def begin_game(player_id):
         game.db.session.add(new_game)
         game.db.session.commit()
         game_attr = new_game.game_attributes()
-        story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'start').one().\
+        story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'start').first().\
                           format_story(game_attr)
         game_attr['start_text'] = story_block
         #####
-        new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=player_id,story_text = story_block)
+        new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=player_id,story_text = story_block, story_type = story_block.block_type)
         game.db.session.add(new_story_block)
         game.db.session.commit()
         #<== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
@@ -210,7 +210,9 @@ def kill_player():
             cur_game.player.alive = False
             story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'death').one().\
                           format_story(game_data)
-            new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=cur_game.player.player_id,story_text = story_block)
+            new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=cur_game.player.player_id, story_text = story_block, story_type=story_block.block_type)
+            grave = game.Grave(player_id = cur_game.player.player_id, killer = game_data['killer'], time_of_death = datetime.now())
+            game.db.session.add(grave)
             game.db.session.add(new_story_block)
             game.db.session.commit()
             return jsonify(user_id)
@@ -276,7 +278,15 @@ def update_stats(player_id):
 @app.route('/grave/player/<player_id>')
 def show_gravesite(player_id):
     player = game.Player.query.get(player_id)
-    stories = game.Player_Story.query.filter(game.Player_Story.player_id == player_id).all()
+    if player.alive:
+        #TODO : flash message, you are still alive!
+        return redirect('/')
+    elif logged_in_and_auth(player.user.user_id):
+        story = game.Player_Story.query.filter(game.Player_Story.player_id == player_id and game.Player_Story.story_type == 'death').first()
+        grave = game.Grave.query.filter(game.Grave.player_id == player_id).one()
+        return render_template('grave.html', story=story, grave_info=grave)
+
+
     
     ###### 
 

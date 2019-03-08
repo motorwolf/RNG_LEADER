@@ -272,6 +272,7 @@ class Player_Story(db.Model):
     player_story_id = db.Column(db.DateTime, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
     story_text = db.Column(db.Text, nullable=False)
+    story_type = db.Column(db.String, nullable=False)
 
 class Enemy(db.Model):
     """ This table will contain enemy stats and names. """
@@ -297,6 +298,16 @@ class Enemy(db.Model):
                 }
         return enemy_dict
 
+class Grave(db.Model):
+    
+    __tablename__ = "graves"
+
+    grave_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.player_id'), nullable=False)
+    killer = db.Column(db.String(255), nullable=False)
+    time_of_death = db.Column(db.DateTime, nullable=False)
+
+    player = db.relationship('Player', backref=db.backref('grave'))
 
 def connect_to_db(app):
     """ Connect the database to our Flask app. """
