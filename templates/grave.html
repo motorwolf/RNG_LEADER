@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2> HERE LIES {{ grave.player.name }} the {{player.p_class.name}}, killed by {{ grave.killer }}</h2>
+  <p> {{grave.player.name}} perished on {{grave.time_of_death}}</p>
+  <p> {{ story.story_text }} </p>
+  <p> {{ grave.player.name }} achieved level {{ player.level }} and a score of {{ player.score }} </p>
+  <h2> Collected Items: </h2>
+  
+  {% if not collected: %}
+  <p>No items were collected.</p>
+  {% endif %}
+  {% if collected: %}
+  <ul>
+  {% for item in collected: %}
+    <li>{{item.name}}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+
+{% endblock %}
