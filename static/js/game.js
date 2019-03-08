@@ -159,11 +159,13 @@ const renderMap = (coords) => {
   const terrainMap = {
     1: 'grass',
     2: 'trees',
+    9: 'desert',
   };
   const terrainCoords = {
     // x,y
     'trees': [32,0],
     'grass': [0,0],
+    'desert': [64,0],
   }
   for(let r = 0; r < coords.length; r++){
     for(let c = 0; c < coords[r].length; c++){
@@ -310,7 +312,6 @@ class Player {
   }
 
   attack(target) {
-    debugger;
     let hitSuccess;
     let damage;
     let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 

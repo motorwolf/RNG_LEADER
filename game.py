@@ -80,13 +80,34 @@ class Game(db.Model):
                 terrain_map.append(terrain_row)
                 terrain_row = []
         terrain_map.append(terrain_row) #loop will skip last row unless it is added after if/else conditional
+        # add desert squares
+        des_width = random.randrange(3,math.floor(length/2))
+        des_height = random.randrange(1,4)
+        desert_rows = terrain_map[-(des_height + 1):]
+        surrounding_land = math.floor((width - des_width)/2);
+        desert_win = [random.randrange(des_width), random.randrange(des_height)]
+        self.win_pos = [(surrounding_land + desert_win[0]), ((length - 1) - des_height) + desert_win[1]]
+        for i, row in enumerate(desert_rows):
+            winrow = False
+            if des_height == i:
+                break;
+            # if i == win_pos[0]:
+            #     winrow = True
+            counter = des_width;
+            for inx in range(len(row)):
+                if inx < surrounding_land or counter == 0:
+                    pass
+                else:
+                    row[inx] = 9
+                    counter -= 1
+
         return terrain_map
     
     def assign_map_attributes(self,length,width):
         """ Creates a map, the start position, and the win position, and assigns to self."""
         self.game_map = self.create_map(length,width)
         self.start_pos = [math.floor((width - 1)/2), 1]
-        self.win_pos =  [5,length - 1]
+        #self.win_pos =  [5,length - 1]
         self.cur_pos = self.start_pos
 
     def game_attributes(self):

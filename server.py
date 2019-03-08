@@ -128,7 +128,7 @@ def begin_game(player_id):
     """ Initialize the Game. Generate map, and send new game attributes to browser."""
     player = game.Player.query.get(player_id)
     if session['logged_in'] and session['user_id'] == str(player.user.user_id):
-        # TODO: randomly generate regent and item from unexhausted pool
+        # TODO: randomly generate regent from unexhausted pool?
         all_items = game.Item.query.filter(game.Item.name != "Future Tech").all()
         player_items = [item.item_id for item in player.collected_items]
         new_items = [item.item_id for item in all_items if item.item_id not in player_items]
@@ -146,7 +146,7 @@ def begin_game(player_id):
                           format_story(game_attr)
         game_attr['start_text'] = story_block
         #####
-        new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=player_id,story_text = story_block, story_type = story_block.block_type)
+        new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=player_id,story_text = story_block, story_type = 'start')
         game.db.session.add(new_story_block)
         game.db.session.commit()
         #<== this should be bundled into a function and handled elsewhere... not on game creation. but rather entered into the db after formatted and then pulled and json-ed.
@@ -188,6 +188,9 @@ def update_game_and_win():
         if modifier == 0:
             modifier = 1
         current_game.player.score += 1000 * modifier
+        new_story_text = game.Story_Block.query.filter(game.Story_Block.block_type == 'item_col_1').one().format_story(game_info)
+        new_player_story = game.Player_Story(player_story_id = datetime.now(), player_id=player_id, story_text = new_story_text, story_type="item_col_1")
+        game.db.session.add(new_player_story)
         game.db.session.commit()
     # TODO LOW: Add story block
     # TODO HIGH: FLASH YOU WON MESSAGE!
@@ -201,8 +204,8 @@ def update_game_and_win():
 @app.route('/api/die', methods=["POST"])
 def kill_player():
     """ Kill the player :( """
+    # TODO: FLASH, you've died.
     game_data = request.get_json()
-    breakpoint()
     if game_data['hero']['alive'] == False:
         cur_game = game.Game.query.get(game_data['game_id'])
         user_id = cur_game.player.user.user_id
@@ -210,7 +213,7 @@ def kill_player():
             cur_game.player.alive = False
             story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'death').one().\
                           format_story(game_data)
-            new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=cur_game.player.player_id, story_text = story_block, story_type=story_block.block_type)
+            new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=cur_game.player.player_id, story_text = story_block, story_type='death')
             grave = game.Grave(player_id = cur_game.player.player_id, killer = game_data['killer'], time_of_death = datetime.now())
             game.db.session.add(grave)
             game.db.session.add(new_story_block)
@@ -282,9 +285,9 @@ def show_gravesite(player_id):
         #TODO : flash message, you are still alive!
         return redirect('/')
     elif logged_in_and_auth(player.user.user_id):
-        story = game.Player_Story.query.filter(game.Player_Story.player_id == player_id and game.Player_Story.story_type == 'death').first()
+        story = game.Player_Story.query.filter(game.Player_Story.player_id == player_id, game.Player_Story.story_type == 'death').first()
         grave = game.Grave.query.filter(game.Grave.player_id == player_id).one()
-        return render_template('grave.html', story=story, grave_info=grave)
+        return render_template('grave.html', story=story, grave=grave, player=player, collected=player.collected_items)
 
 
     
