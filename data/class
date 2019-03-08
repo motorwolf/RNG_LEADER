@@ -1,0 +1,6 @@
+#name#str#dex#arm#weap#hp#hp_max#int#cha#sprite_pos#bonus#
+ELEPHANT|10|1|2|4|50|50|10|10|96|1
+DOG|5|3|4|4|30|30|10|10|96|1
+CAT|2|10|3|3|40|40|10|10|96|3
+SNAIL|1|1|1|1|1|1|1|1|96|1000
+PEREGRINE|20|20|20|20|100|100|20|20|96|0
