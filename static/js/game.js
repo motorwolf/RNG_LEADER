@@ -43,8 +43,20 @@ const outputPlayerStatus = (gameData) => {
   const name = statusBox.getElementById("name");
 }
 
+const isBattleTime = (percent) => {
+  const number = Math.floor(Math.random() * 100);
+  if(number > percent){
+    return false;
+  }
+  else{
+    ///// TESTING ON! OTHERWISE THIS SHOULD BE TRUE
+    return true;
+  }
+}
+
 const movePlayer = (dir,currentPosition) => {
   // Interprets player direction, renders map, renders the starting position sprite, updates the player position and renders the player sprite.
+  gameData['turn_count']++;
   const directions = {
     "down": {"axis": 1,"delta": 1},
     "up": {"axis": 1,"delta":-1},
@@ -57,24 +69,37 @@ const movePlayer = (dir,currentPosition) => {
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
   renderPlayer(currentPosition[0], currentPosition[1]);
+  
+  if(isBattleTime(10)){
+    // is this a weird place to check this? perhaps it should go AFTER this function in the movefunction
+    const diceRoll = Math.floor(Math.random() * 10);
+    let offset = 0;
+    if(diceRoll === 1){
+      offset += 1;
+    }
+    if(diceRoll === 2){
+      offset -= 1;
+    }
+    let enemyLevel = gameData.hero.level + offset;
+    if(enemyLevel < 1){
+      enemyLevel = 1;
+    }
+    fetch(`/api/get_enemy?level=1`)  //${enemyLevel}`) TODO after making enemies for other levels...
+      .then(response => response.json())
+      .then(response => {
+        startBattle(response,gameData.hero);
+      });
+  };
 }
 
-const isBattleTime = (percent) => {
-  const number = Math.floor(Math.random() * 100);
-  if(number > percent){
-    return false;
-  }
-  else{
-    ///// TESTING ON! OTHERWISE THIS SHOULD BE TRUE
-    return false;
-  }
-}
 
 const startGame = () => {
   gameData['active_game'] = true;
   gameData['item_collected'] = false;
+  gameData['turn_count'] = 0;
   gameData['battle'] = false;
   gameData['player_id'] = parseInt(document.getElementById('player_id').textContent);
+  getStats(gameData['player_id']);
   logToBox(gameData.start_text);
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
@@ -200,9 +225,11 @@ const renderPlayer = (x,y) => {
   }
   
   if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
+    if(gameData['turn_count'] !== 0){
+      gameData.hero.heal();
+    }
     if(gameData.item_collected){
       // Do something. Namely, you will return the item to your regent.
-        gameData.hero.heal()
         logToBox('<p>YES! You delivered the thing!</p>');
         fetch(`/api/game_won`,{
           method: 'POST',
@@ -216,26 +243,6 @@ const renderPlayer = (x,y) => {
         });
       }
     }
-  else if(isBattleTime(10)){
-    // is this a weird place to check this? perhaps it should go AFTER this function in the movefunction
-    const diceRoll = Math.floor(Math.random() * 10);
-    let offset = 0;
-    if(diceRoll === 1){
-      offset += 1;
-    }
-    if(diceRoll === 2){
-      offset -= 1;
-    }
-    let enemyLevel = gameData.hero.level + offset;
-    if(enemyLevel < 1){
-      enemyLevel = 1;
-    }
-    fetch(`/api/get_enemy?level=1`)  //${enemyLevel}`) TODO after making enemies for other levels...
-      .then(response => response.json())
-      .then(response => {
-        startBattle(response,gameData.hero);
-      });
-  };
 }
 
 const updateExperience = (player_id,enemy_exp) => {
@@ -262,9 +269,11 @@ const updateExperience = (player_id,enemy_exp) => {
       gameData.hero.stats = response.stats;
     }
   });
+  getStats(gameData['player_id']);
 }
 
-const die = () => {
+const die = (enemy) => {
+  gameData['killer'] = enemy.name;
   fetch('/api/die', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -276,30 +285,21 @@ const die = () => {
   })
 }
 
-const getStats = (player_id) => {
-  fetch(`/api/get_stats/${player_id}`)
-    .then(response => response.json())
-    .then(response => {
-      outputStats(response);
-    });
+const updateHP = () => {
+  const hp = document.getElementById('stat_hp');
+  const newHP = gameData.hero.stats.hp;
+  if(parseInt(hp.textContent) !== newHP){
+    hp.textContent = newHP;
+  }
 }
 
-const outputStats = (stats) => {
-  for(const stat in stats){
-    //console.log(stat);
-    if(stat == 'stats'){
-      // we will need to loop through specially
-      for(let inner_stat in stats[stat]){
-        const id = "stat_" + inner_stat;
-        let target = document.getElementById(id);
-        target.textContent = stats[stat][inner_stat];
-      }
-    }
-    else {
-      let target = document.getElementById(stat);
-      target.textContent = stats[stat];
-    }
-  }
+
+const setStats = (player_id) => {
+  fetch(`/api/set_stats/${player_id}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(gameData.hero.stats),
+  });
 }
 
 class Player {
@@ -310,6 +310,7 @@ class Player {
   }
 
   attack(target) {
+    debugger;
     let hitSuccess;
     let damage;
     let hitChance = Math.floor(Math.random() * (parseInt(this.stats.dex) + 20)); 
@@ -343,6 +344,7 @@ class Hero extends Player {
   }
   heal(){
     this.stats.hp = this.stats.hp_max;
+    updateHP();
     logToBox(`You return to ${gameData.regent}'s castle. They summon their remaining powers to heal you.`);
     // TODO LOW: this could be affected by regent attitude, with cha being an offset.
   }
@@ -369,8 +371,8 @@ const renderEnemyDialog = () => {
   enemyDialog.style = "display:block";
 }
 
-const renderEnemy = () => {
-  let sx = 160; // x axis coordinate - source (WILL BE DEFINED DIFFERENTLY FOR EACH ENEMY...)
+const renderEnemy = (spritePos) => {
+  let sx = spritePos; // x axis coordinate - source (WILL BE DEFINED DIFFERENTLY FOR EACH ENEMY...)
   let sy = 0; // y axis coordinate - source
   let sWidth = 32; // width of source rect
   let sHeight = 32; // height of source rect
@@ -383,12 +385,13 @@ const renderEnemy = () => {
 
 
 const startBattle = (enemyData, hero) => {
+  console.log(enemyData);
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
   logToBox(`A ${enemy.name.toUpperCase()} draws near.`);
   renderEnemyDialog();
-  renderEnemy();
+  renderEnemy(enemyData.sprite_pos);
   enemyDialog.style = 'display:block';
   const attack = document.getElementById('attack');
   const run = document.getElementById('run');
@@ -413,13 +416,14 @@ const startBattle = (enemyData, hero) => {
       }
       if(enemyFaster){
         enemy.attack(hero);
+        updateHP();
         if(hero.alive){
           hero.attack(enemy);
         }
         else{
           logToBox("You are dead.");
           gameData.battle = false;
-          // TODO : die();
+          die(enemy);
         }
         // TODO: instead of logging here, I'll probably do something.
       } 
@@ -427,6 +431,7 @@ const startBattle = (enemyData, hero) => {
         hero.attack(enemy);
         if(enemy.alive){
           enemy.attack(hero);
+          updateHP();
         }
         else {
           logToBox("The enemy is dead.");
@@ -445,7 +450,7 @@ const startBattle = (enemyData, hero) => {
       if(!hero.alive){
         logToBox(`OH NO! You are dead.`);
         gameData.battle = false;
-        // TODO: HANDLE your death.
+        die(enemy);
       }
     }
     if(type === "run"){
@@ -453,21 +458,37 @@ const startBattle = (enemyData, hero) => {
       if(enemyFaster){
         if(diceRoll === 1){
           logToBox("You've run away.");
-          // TODO: END BATTLE!
           gameData.battle = false;
         }
         else{
           logToBox("You couldn't run away!");
+          enemy.attack(hero);
+          updateHP();
+          if(!hero.alive){
+            die(enemy);
+          }
         }
       }
       else {
         if(diceRoll < 3){
           logToBox("You've run away!");
-          // TODO: actually run away
           gameData.battle = false;
+        }
+        else{
+          logToBox("You couldn't run away!");
+          enemy.attack(hero);
+          updateHP();
+          if(!hero.alive){
+            die(enemy);
+          }
         }
       }
     }
+    if(!hero.alive){
+      die(enemy);
+    }
+    setStats(gameData['player_id']);
+    getStats(gameData['player_id']); 
     attackSequence = false;
     attack.disabled = false;
     run.disabled = false;

@@ -8,4 +8,8 @@
       <h2> {{ item }} </h2>
   {% endfor %}
   <a href="{{ id }}/game">LAUNCH GAME</a>
+  {% include 'player_data.html'%}
+  ALIVE?: <span id="alive"></span><br>
+  MUTATION: <span id="mutation"></span><br>
+  <script src="/static/js/stats.js"></script>
 {% endblock %}

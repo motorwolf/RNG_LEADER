@@ -9,7 +9,7 @@
   {% endif %}
   <h2> PLAYERS </h2>
   {% for player in alive_players:%}
-    <a href="/user/{{user_id}}/player/{{player.player_id}}">{{player.name}}</a>
+  <a href="/user/{{user_id}}/player/{{player.player_id}}">{{player.name}} the {{player.p_class.name.lower()}}</a>
   {% endfor %}
   <h2> DEAD PLAYERS </h2>
   {% for player in dead_players:%}
@@ -19,6 +19,15 @@
   CREATE NEW PLAYER!
   <form action="/api/create_player" id="createPlayer">
     <label>PLAYER NAME: <input type="text" name="name"></label>
+    <label>PLAYER TYPE: 
+      <select name="type">
+        <option value="ELEPHANT">ELEPHANT - STRONG BUT SLOW</option>
+        <option value="DOG">DOG - WELL ROUNDED</option>
+        <option value="CAT">CAT - WEAK BUT FAST</option>
+        <option value="SNAIL">SNAIL - CANNOT DO MUCH</option>
+        <option value="PEREGRINE">PEREGRINE FALCON - DESTROYS ALL</option> 
+      </select>
+    </label>
     <button type="submit">CREATE ME</button>
   </form>
   <br>

@@ -1,5 +1,5 @@
 """ This file will seed data into our database. """
-from game import Regent, Game, Player, Item, Collected_Item, Mutation, Story_Block, Enemy, connect_to_db, db
+from game import Regent, Game, Player, Item, Collected_Item, Mutation, Story_Block, Enemy, Player_Class, connect_to_db, db
 from server import app
 
 def load_regents(file):
@@ -58,12 +58,38 @@ def load_enemies(file):
             }
     for row in open(file):
         if "#" not in row:
-            name, level, exp, strength, dex, arm, weap, hp, hp_max, desc = row.rstrip().split("|")
+            name, level, exp, strength, dex, arm, weap, hp, hp_max, sprite_pos, desc = row.rstrip().split("|")
             stat_schema["str"], stat_schema["dex"], stat_schema["arm"], stat_schema["weap"], stat_schema["hp"], stat_schema["hp_max"] = int(strength), int(dex), int(arm), int(weap), int(hp), int(hp_max)
-            new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema, description=desc)
+            new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema, sprite_pos=sprite_pos, description=desc)
             db.session.add(new_enemy)
     db.session.commit()
     print("ENEMIES!! =============ADDED!")
+
+def load_classes(file):
+
+    Player_Class.query.delete()
+    
+    stat_schema = {
+            "str": 0,
+            "dex": 0,
+            "arm": 0,
+            "weap": 0,
+            "hp": 0,
+            "hp_max": 0,
+            "int": 0,
+            "cha": 0,
+            }
+
+    for row in open(file):
+        if "#" not in row:
+            name, strength, dex, arm, weap, hp, hp_max, intel, cha, sprite_pos, bonus = row.rstrip().split("|")
+            stat_schema["str"], stat_schema["dex"], stat_schema["arm"], stat_schema["weap"], stat_schema["hp"], stat_schema["hp_max"], stat_schema['int'], stat_schema['cha'] = int(strength), int(dex), int(arm), int(weap), int(hp), int(hp_max), int(intel), int(cha)
+            
+            new_class = Player_Class(name=name,base_stats=stat_schema.copy(),sprite_pos=sprite_pos,bonus=bonus)
+            db.session.add(new_class)
+    db.session.commit()
+    print("CLASSES...........ADDED!")
+
 
 if __name__ == '__main__':
     connect_to_db(app)
@@ -73,3 +99,4 @@ if __name__ == '__main__':
     load_mutations('data/mutations')
     load_story_blocks('data/story_blocks')
     load_enemies('data/enemies')
+    load_classes('data/class')

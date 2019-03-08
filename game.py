@@ -103,6 +103,7 @@ class Game(db.Model):
                 "mutation": self.player.mutation.name,
                 "stats": self.player.stats,
                 "player_level": self.player.level,
+                "player_class": self.player.p_class.name,
                 }
         def int_lst_to_str(lst):
             """ Utility to convert a list of numbers to a joined string"""
@@ -144,6 +145,7 @@ class Player(db.Model):
     
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    player_class = db.Column(db.Integer, db.ForeignKey('player_classes.class_id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     alive = db.Column(db.Boolean, nullable=False)
     mutation_id = db.Column(db.Integer, db.ForeignKey('mutations.mutation_id'), nullable=False)
@@ -154,6 +156,7 @@ class Player(db.Model):
 
     collected_items = db.relationship("Collected_Item", backref = db.backref("player"))
     mutation = db.relationship("Mutation", backref = db.backref("players"))
+    p_class = db.relationship("Player_Class", backref = db.backref('players'))
     
 
     def __repr__(self):
@@ -191,6 +194,18 @@ class Player(db.Model):
         db.session.add(self)
         db.session.commit()
         return self.stats
+
+class Player_Class(db.Model):
+    """ Represents the starting stats and sprite of player and score bonuses. """
+
+    __tablename__ = 'player_classes'
+
+    class_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    base_stats = db.Column(db.JSON, nullable=False)
+    sprite_pos = db.Column(db.Integer, nullable=False)
+    bonus = db.Column(db.Integer, nullable=False)
+
 
 class Collected_Item(db.Model):
     """ Represents a successfully collected item when a player wins a game. """
@@ -267,8 +282,10 @@ class Enemy(db.Model):
     level = db.Column(db.Integer, nullable=False)
     stats = db.Column(db.JSON, nullable=False)
     exp = db.Column(db.Integer, nullable=False)
+    sprite_pos = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(100), nullable=True)
     
+
     def enemy_attributes(self):
         enemy_dict = {
                 'name': self.name,
@@ -276,6 +293,7 @@ class Enemy(db.Model):
                 'stats': self.stats,
                 'exp': self.exp,
                 'desc': self.description,
+                'sprite_pos': self.sprite_pos,
                 }
         return enemy_dict
 

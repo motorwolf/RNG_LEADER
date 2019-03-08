@@ -98,8 +98,10 @@ def create_player():
     """ Creates a new player based on JSON sent and adds the new player to the database. Associates based on logged in user_id. """ 
     new_player_request = request.get_json()
     name = new_player_request['name']
+    player_type = new_player_request['type']
     mutation_id = random.choice(game.Mutation.query.all()).mutation_id
-    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats={'str':2,'int':4,'cha':20,'dex': 10,'hp_max':100,'hp':100,'arm':10,'weap':1},exp=0,level=1)
+    player_class = game.Player_Class.query.filter(game.Player_Class.name == player_type).one(); 
+    new_player = game.Player(user_id=session['user_id'],name=name,mutation_id=mutation_id,alive=True,score=0,stats=player_class.base_stats,exp=0,level=1,player_class=player_class.class_id)
     game.db.session.add(new_player)
     game.db.session.commit()
     return "" # this does return nothing, but feels weird
@@ -200,14 +202,20 @@ def update_game_and_win():
 def kill_player():
     """ Kill the player :( """
     game_data = request.get_json()
-    # TODO LOW : Make sure that the alive attribute is false, so we can't just go slaughtering innocents. But for testing, I'll allow it.
-    # if game_data['hero']['alive'] == False:
-    cur_game = game.Game.query.get(game_data['game_id'])
-    user_id = cur_game.player.user.user_id
-    if logged_in_and_auth(user_id):
-        cur_game.player.alive = False
-        game.db.session.commit()
-    return jsonify(user_id)
+    breakpoint()
+    if game_data['hero']['alive'] == False:
+        cur_game = game.Game.query.get(game_data['game_id'])
+        user_id = cur_game.player.user.user_id
+        if logged_in_and_auth(user_id):
+            cur_game.player.alive = False
+            story_block = game.Story_Block.query.filter(game.Story_Block.block_type == 'death').one().\
+                          format_story(game_data)
+            new_story_block = game.Player_Story(player_story_id=datetime.now(), player_id=cur_game.player.player_id,story_text = story_block)
+            game.db.session.add(new_story_block)
+            game.db.session.commit()
+            return jsonify(user_id)
+    else:
+        return ""
 
 @app.route('/api/get_enemy', methods=["GET"])
 def return_enemy():
@@ -224,6 +232,7 @@ def update_experience():
         #player_to_update.exp = 29 # TEST! DELETE LATER
         player_to_update.exp += to_update['enemy_exp']
         player_to_update.score += to_update['enemy_exp'] * 2
+        game.db.session.commit()
         updated_stats = {}
         if player_to_update.do_i_level_up():
             new_stats = player_to_update.level_up_stats()
@@ -255,6 +264,21 @@ def deliver_stats(player_id):
             }
     return jsonify(player_info)
 
+@app.route('/api/set_stats/<player_id>', methods=["POST"])
+def update_stats(player_id):
+    player_stats = request.get_json()
+    player_to_update = game.Player.query.get(player_id)
+    if logged_in_and_auth(player_to_update.user.user_id):
+        player_to_update.stats = player_stats
+        game.db.session.commit()
+    return ""
+
+@app.route('/grave/player/<player_id>')
+def show_gravesite(player_id):
+    player = game.Player.query.get(player_id)
+    stories = game.Player_Story.query.filter(game.Player_Story.player_id == player_id).all()
+    
+    ###### 
 
 def logged_in_and_auth(id_to_check):
     id_to_check = str(id_to_check)
