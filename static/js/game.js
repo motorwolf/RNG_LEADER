@@ -3,6 +3,18 @@ localStorage = window.localStorage;
 let gameData = {
 };
 
+const hasRelevantSave = () =>{
+  if(localStorage.savedGame){
+    const id = document.getElementById('player_id').textContent;
+    game_info = JSON.parse(localStorage.gameData);
+    if(game_info.player_id == parseInt(id)){
+      gameData = game_info;
+      return true;
+    }
+  }
+  return false;
+}
+
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 const spriteSheet = document.querySelector('#sprites');
@@ -10,25 +22,48 @@ spriteSheet.onload = function() {
   ctx.drawImage(spriteSheet, 0,0,32,32,50,50,32,32);
 };
 
+const storeGame = (gameData) => {
+  localStorage.setItem('savedGame', true);
+  localStorage.setItem('gameData', JSON.stringify(gameData));
+}
+
+const importantMessage = (msg) => {
+  const overlay = document.getElementById('overlay');
+  const dialog = document.getElementById('dialog');
+  overlay.style = 'display: block';
+  dialog.textContent = msg;
+  const button = document.createElement('button');
+  const buttonText = document.createTextNode('OK');
+  button.appendChild(buttonText);
+  overlay.appendChild(button);
+  const hideWindow = (target) => {
+    target.style = 'display: none';
+  }
+  button.addEventListener('click', () => {
+    overlay.style = 'display: none';
+    button.remove();
+  });
+}
 
 const gameInitButton = document.querySelector("#game");
 gameInitButton.addEventListener('click', (e) => {
-  if(gameData['active_game'] == undefined){
+  if(!hasRelevantSave()){
     const id = document.getElementById('player_id').textContent;
     fetch(`/api/${id}/start_game`)
       .then(response => response.json())
       .then(response => {
         gameData = response;
-        localStorage.setItem('gameData',JSON.stringify(response));
         gameData.hero = new Hero(gameData);
-        startGame();
+        storeGame(gameData);
+        startNewGame();
       });
-    gameInitButton.style = 'display:none';
   }
   else {
     // TODO: handle this -- although the button should not be there if there is a game in progress.
     console.log("A game is already in progress.");
+    startGame();
   }
+  gameInitButton.style = 'display:none';
 });
 
 const logToBox = (html) => {
@@ -69,9 +104,34 @@ const movePlayer = (dir,currentPosition) => {
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
   renderPlayer(currentPosition[0], currentPosition[1]);
+    
+  if(currentPosition[0] == gameData.win_pos[0] && currentPosition[1] == gameData.win_pos[1]){
+    if(!gameData.item_collected){
+      getEnemy('boss');
+    }
+  }
+  
+  if(currentPosition[0] == gameData.start_pos[0] && currentPosition[1] == gameData.start_pos[1]){
+    if(gameData['turn_count'] !== 0){
+      gameData.hero.heal();
+    }
+    if(gameData.item_collected){
+        localStorage.setItem('savedGame', false);
+        logToBox('<p>YES! You delivered the thing!</p>');
+        fetch(`/api/game_won`,{
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(gameData),
+        })
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          window.location.href = `../${response}`;
+        });
+      }
+    }
   
   if(isBattleTime(10)){
-    // is this a weird place to check this? perhaps it should go AFTER this function in the movefunction
     const diceRoll = Math.floor(Math.random() * 10);
     let offset = 0;
     if(diceRoll === 1){
@@ -84,27 +144,91 @@ const movePlayer = (dir,currentPosition) => {
     if(enemyLevel < 1){
       enemyLevel = 1;
     }
-    fetch(`/api/get_enemy?level=1`)  //${enemyLevel}`) TODO after making enemies for other levels...
+    getEnemy(1);
+  }
+}
+
+const getEnemy = (level) => {
+  if(level !== 'boss'){
+    fetch(`/api/get_enemy?level=${level}`)  //${enemyLevel}`) TODO after making enemies for other levels...
       .then(response => response.json())
       .then(response => {
         startBattle(response,gameData.hero);
       });
-  };
+  }
+  else{
+    fetch(`/api/get_enemy?level=99`)  
+      .then(response => response.json())
+      .then(response => {
+        const curLevel = gameData.hero.level; 
+        if(curLevel > 1){
+          response.exp * curLevel;
+          for(let stat in response.stats){
+            switch(stat){
+              case("hp"):
+                response.stats['hp'] += response.stats['hp'] * 0.2;
+                break;
+              case("hp_max"):
+                response.stats['hp_max'] += response.stats['hp_max'] * 0.2;
+                break;
+              default:
+                response.stats[stat] += (curLevel * 2);
+            }
+          }
+        }
+        startBattle(response,gameData.hero,bossFlag = true);
+      });
+  }
 }
 
+const collectItem = () => {
+    if(!gameData['boss_alive']){
+      logToBox(`<p>HOORAY! YOU HAVE COLLECTED ${gameData.item}!</p>`);
+      const id = document.getElementById('player_id').textContent;
+      fetch(`/api/${id}/item_collected`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(gameData),
+      })
+        .then(response => {
+          if(response.ok){
+            gameData.item_collected = true;
+            storeGame(gameData);
+          }
+        });
+    }
+}
 
-const startGame = () => {
+const startNewGame = () => {
   gameData['active_game'] = true;
   gameData['item_collected'] = false;
   gameData['turn_count'] = 0;
   gameData['battle'] = false;
+  gameData['boss_alive'] = true;
   gameData['player_id'] = parseInt(document.getElementById('player_id').textContent);
   getStats(gameData['player_id']);
   logToBox(gameData.start_text);
+  addKeyMap();
   renderMap(gameData.terrain);
   renderStartPos(gameData.start_pos);
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = [...gameData.start_pos];
+  storeGame(gameData);
+}
+
+const startGame = () => {
+  getStats(gameData['player_id']);
+  gameData.hero = new Hero(gameData);
+  logToBox("You return to your game...");
+  addKeyMap();
+  renderMap(gameData.terrain);
+  renderStartPos(gameData.start_pos);
+  renderPlayer(...gameData['cur_pos']);
+  storeGame(gameData);
+}
+
+const addKeyMap = () => {
+
   window.addEventListener('keydown', (e) => {
     if(!gameData.battle){
       switch(e.key){
@@ -131,8 +255,7 @@ const startGame = () => {
       }
     }
   });
-  const textBox = document.getElementById('textBox');
-   
+
 }
 
 const sizeCanvas = (unitSize, width, height) => {
@@ -210,41 +333,10 @@ const renderPlayer = (x,y) => {
   let dHeight = unitSize; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
-    if(!gameData.item_collected){
-      logToBox(`<p>HOORAY! YOU HAVE COLLECTED ${gameData.item}!</p>`);
-      const id = document.getElementById('player_id').textContent;
-      fetch(`/api/${id}/item_collected`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(gameData),
-      })
-        .then(response => {
-          if(response.ok){
-            gameData.item_collected = true;
-          }
-        });
+    if(!gameData['boss_alive']){
+      collectItem();
     }
   }
-  
-  if(x == gameData.start_pos[0] && y == gameData.start_pos[1]){
-    if(gameData['turn_count'] !== 0){
-      gameData.hero.heal();
-    }
-    if(gameData.item_collected){
-      // Do something. Namely, you will return the item to your regent.
-        logToBox('<p>YES! You delivered the thing!</p>');
-        fetch(`/api/game_won`,{
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(gameData),
-        })
-        .then(response => response.json())
-        .then(response => {
-          console.log(response);
-          window.location.href = `../${response}`;
-        });
-      }
-    }
 }
 
 const updateExperience = (player_id,enemy_exp) => {
@@ -275,6 +367,8 @@ const updateExperience = (player_id,enemy_exp) => {
 }
 
 const die = (enemy) => {
+  localStorage.setItem('savedGame', false);
+  gameData['active_game'] = false;
   gameData['killer'] = enemy.name;
   fetch('/api/die', {
     method: 'POST',
@@ -334,6 +428,7 @@ class Player {
     else {
       logToBox(`${this.name} MISSES!`);
     }
+    updateHP();
     }
 }
 class Hero extends Player {
@@ -385,7 +480,7 @@ const renderEnemy = (spritePos) => {
 }
 
 
-const startBattle = (enemyData, hero) => {
+const startBattle = (enemyData, hero, bossFlag = false) => {
   console.log(enemyData);
   let attackSequence = false;
   gameData.battle = true;
@@ -451,7 +546,9 @@ const startBattle = (enemyData, hero) => {
       if(!hero.alive){
         logToBox(`OH NO! You are dead.`);
         gameData.battle = false;
-        die(enemy);
+        if(gameData['active_game']){
+          die(enemy);
+        }
       }
     }
     if(type === "run"){
@@ -485,21 +582,26 @@ const startBattle = (enemyData, hero) => {
         }
       }
     }
-    if(!hero.alive){
+    if(!hero.alive && gameData['active_game']){
       die(enemy);
     }
+    updateHP();
     setStats(gameData['player_id']);
     getStats(gameData['player_id']); 
     attackSequence = false;
     attack.disabled = false;
     run.disabled = false;
     if(!gameData.battle){
+      if(bossFlag){
+        gameData['boss_alive'] = false;
+      }
       enemyDialog.style = "display:none";
       renderMap(gameData.terrain);
       renderStartPos(gameData.start_pos);
       renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
       attack.removeEventListener('click', functionList[0]);
       run.removeEventListener('click', functionList[1]);
+      storeGame(gameData);
     }
   }
 }

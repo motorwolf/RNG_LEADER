@@ -60,7 +60,7 @@ def load_enemies(file):
         if "#" not in row:
             name, level, exp, strength, dex, arm, weap, hp, hp_max, sprite_pos, desc = row.rstrip().split("|")
             stat_schema["str"], stat_schema["dex"], stat_schema["arm"], stat_schema["weap"], stat_schema["hp"], stat_schema["hp_max"] = int(strength), int(dex), int(arm), int(weap), int(hp), int(hp_max)
-            new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema, sprite_pos=sprite_pos, description=desc)
+            new_enemy = Enemy(name=name, level=level, exp=exp, stats=stat_schema.copy(), sprite_pos=sprite_pos, description=desc)
             db.session.add(new_enemy)
     db.session.commit()
     print("ENEMIES!! =============ADDED!")
