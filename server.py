@@ -1,6 +1,6 @@
 import json, pdb, game, os, hashlib, random
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, jsonify, session
+from flask import Flask, render_template, request, redirect, jsonify, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -28,7 +28,8 @@ def user_login():
     # TODO: Need to handle if the user doesn't exist!
     user = game.User.query.filter(game.User.email == email).first()
     if(user.password != pw):
-        print("YOU HAVE BEEN REJECTED!")
+        print("YOU HAVE BEEN REJECTED")
+        flash("This password did not match.")
         return "Did not work."
     else:
         session['logged_in'] = True
@@ -40,6 +41,7 @@ def log_user_out():
     """ Remove user id and sets log in state to false."""
     del session['user_id']
     session['logged_in'] = False
+    flash("You have logged out.")
     return redirect("/")
 @app.route('/signup')
 def show_signup_form():
@@ -57,14 +59,14 @@ def user_sign_up():
         new_user = game.User(name=user_name,email=user_email,password=user_pass)
         game.db.session.add(new_user)
         game.db.session.commit()
-        # TODO: flash you've been added
         # log in user
         session['logged_in'] = True
         session['user_id'] = str(new_user.user_id)
+        flash("Welcome! You've signed up!")
         return redirect(f'/user/{new_user.user_id}')
     
     else:
-        # TODO: an account already exists with this email.
+        flash("An account already exists with this email. Log in.")
         return redirect('/login')
 
 ##########
@@ -87,10 +89,11 @@ def show_user_info(user_id):
                     dead_players.append(player)
             return render_template("user.html", alive_players = alive_players,dead_players = dead_players, user_id = user_id)
         else:
-            #TODO : You can't see this page.
+            flash("You are not logged in and can't see this page.")
             return redirect("/login")
     else:
         #TODO: message: you are not logged in.
+        flash("You are not logged in.")
         return redirect("/login")
 
 @app.route('/api/create_player', methods=["POST"])
@@ -117,6 +120,7 @@ def show_player_info(user_id, player_id):
         return render_template('player.html', name=player.name, collected=named_items, id=player_id) 
     else:
         #TODO: flash you failed criteria to see this page
+        flash("You are not logged in.")
         return redirect('/login') 
 
 @app.route('/user/<user_id>/player/<player_id>/game')
@@ -193,7 +197,7 @@ def update_game_and_win():
         game.db.session.add(new_player_story)
         game.db.session.commit()
     # TODO LOW: Add story block
-    # TODO HIGH: FLASH YOU WON MESSAGE!
+        flash("You have won the game!")
     return jsonify(player_id) 
 
 # @app.route('/congrats')
@@ -204,7 +208,7 @@ def update_game_and_win():
 @app.route('/api/die', methods=["POST"])
 def kill_player():
     """ Kill the player :( """
-    # TODO: FLASH, you've died.
+    flash("Tragically, your character has died.")
     game_data = request.get_json()
     if game_data['hero']['alive'] == False:
         cur_game = game.Game.query.get(game_data['game_id'])
@@ -282,7 +286,7 @@ def update_stats(player_id):
 def show_gravesite(player_id):
     player = game.Player.query.get(player_id)
     if player.alive:
-        #TODO : flash message, you are still alive!
+        flash("You are still alive!")
         return redirect('/')
     elif logged_in_and_auth(player.user.user_id):
         story = game.Player_Story.query.filter(game.Player_Story.player_id == player_id, game.Player_Story.story_type == 'death').first()
