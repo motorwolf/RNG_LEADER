@@ -17,10 +17,9 @@ const hasRelevantSave = () =>{
 
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
-const spriteSheet = document.querySelector('#sprites');
-spriteSheet.onload = function() {
-  ctx.drawImage(spriteSheet, 0,0,32,32,50,50,32,32);
-};
+//spriteSheet.onload = function() {
+//  ctx.drawImage(spriteSheet, 0,0,32,32,50,50,32,32);
+//};
 
 const storeGame = (gameData) => {
   localStorage.setItem('savedGame', true);
@@ -268,6 +267,7 @@ const renderMap = (coords) => {
   // This method eats our multidimensional array and spits out beautiful sprites.
   //const height = document.documentElement.clientHeight; =>>> this could be one day used to responsively output block size!
   // could this function actually call the other function? That way we could pass it unitSize rather than redeclaring it.
+  const spriteSheet = document.querySelector('#terrain');
   const unitSize = 32; // icon size, in pixels
   sizeCanvas(unitSize,coords[0].length,coords.length);
 
@@ -287,8 +287,8 @@ const renderMap = (coords) => {
   const terrainCoords = {
     // x,y
     'trees': [32,0],
-    'grass': [0,0],
-    'desert': [64,0],
+    'grass': [64,0],
+    'desert': [0,0],
   }
   for(let r = 0; r < coords.length; r++){
     for(let c = 0; c < coords[r].length; c++){
@@ -306,7 +306,8 @@ const renderMap = (coords) => {
 }
 
 const renderStartPos = (coord) => {
-  // renders the start square sprite on the start square. should possibly be chained to the map rendering function?
+  
+  const spriteSheet = document.querySelector('#terrain');
   const x = coord[0]; 
   const y = coord[1];
   const unitSize = 32; // unit size should be more global........ ugh
@@ -322,11 +323,14 @@ const renderStartPos = (coord) => {
 }
 const renderPlayer = (x,y) => {
   // This function updates the player position, renders the player sprite, and checks whether or not the player position is on the winning square.
+  
+
+  const spriteSheet = document.querySelector('#players');
   const unitSize = 32;
-  let sx = 96; // x axis coordinate - source
+  let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
-  let sWidth = 32; // width of source rect
-  let sHeight = 32; // height of source rect
+  let sWidth = 383; // width of source rect
+  let sHeight = 383; // height of source rect
   let dx = x * unitSize; // x axis coord - destination
   let dy = y * unitSize; // y axis coord - destination
   let dWidth = unitSize; // width of destination rect
@@ -454,10 +458,12 @@ class Enemy extends Player {
   }
 }
 const renderEnemyDialog = () => {
-  let sx = 64; // x axis coordinate - source
+  
+  const spriteSheet = document.querySelector('#background');
+  let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
-  let sWidth = 32; // width of source rect
-  let sHeight = 32; // height of source rect
+  let sWidth = 640; // width of source rect
+  let sHeight = 640; // height of source rect
   let dx = canvas.width * 0.15; // x axis coord - destination
   let dy = canvas.height * 0.15; // y axis coord - destination
   let dWidth = canvas.width * 0.70; // width of destination rect
@@ -468,6 +474,7 @@ const renderEnemyDialog = () => {
 }
 
 const renderEnemy = (spritePos) => {
+  const spriteSheet = document.querySelector('#enemies');
   let sx = spritePos; // x axis coordinate - source (WILL BE DEFINED DIFFERENTLY FOR EACH ENEMY...)
   let sy = 0; // y axis coordinate - source
   let sWidth = 32; // width of source rect
