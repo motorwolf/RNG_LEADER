@@ -268,7 +268,7 @@ const renderMap = (coords) => {
   //const height = document.documentElement.clientHeight; =>>> this could be one day used to responsively output block size!
   // could this function actually call the other function? That way we could pass it unitSize rather than redeclaring it.
   const spriteSheet = document.querySelector('#terrain');
-  const unitSize = 32; // icon size, in pixels
+  const unitSize = 48; // icon size, in pixels
   sizeCanvas(unitSize,coords[0].length,coords.length);
 
   let sx = 0; // x axis coordinate - source
@@ -286,9 +286,9 @@ const renderMap = (coords) => {
   };
   const terrainCoords = {
     // x,y
-    'trees': [32,0],
-    'grass': [64,0],
-    'desert': [0,0],
+    'trees': [64,0],
+    'grass': [32,0],
+    'desert': [96,0],
   }
   for(let r = 0; r < coords.length; r++){
     for(let c = 0; c < coords[r].length; c++){
@@ -296,8 +296,8 @@ const renderMap = (coords) => {
       const blockCoords = terrainCoords[blockType];
       sx = blockCoords[0];
       sy = blockCoords[1];
-      dx = sWidth * c;
-      dy = sHeight * r;
+      dx = dWidth * c;
+      dy = dHeight * r;
       ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     }
   }
@@ -310,8 +310,8 @@ const renderStartPos = (coord) => {
   const spriteSheet = document.querySelector('#terrain');
   const x = coord[0]; 
   const y = coord[1];
-  const unitSize = 32; // unit size should be more global........ ugh
-  let sx = 128; // x axis coordinate - source
+  const unitSize = 48; // unit size should be more global........ ugh
+  let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
   let sWidth = 32; // width of source rect
   let sHeight = 32; // height of source rect
@@ -326,7 +326,7 @@ const renderPlayer = (x,y) => {
   
 
   const spriteSheet = document.querySelector('#players');
-  const unitSize = 32;
+  const unitSize = 48;
   let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
   let sWidth = 383; // width of source rect
@@ -462,8 +462,8 @@ const renderEnemyDialog = () => {
   const spriteSheet = document.querySelector('#background');
   let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
-  let sWidth = 640; // width of source rect
-  let sHeight = 640; // height of source rect
+  let sWidth = 448; // width of source rect
+  let sHeight = 448; // height of source rect
   let dx = canvas.width * 0.15; // x axis coord - destination
   let dy = canvas.height * 0.15; // y axis coord - destination
   let dWidth = canvas.width * 0.70; // width of destination rect
@@ -477,12 +477,12 @@ const renderEnemy = (spritePos) => {
   const spriteSheet = document.querySelector('#enemies');
   let sx = spritePos; // x axis coordinate - source (WILL BE DEFINED DIFFERENTLY FOR EACH ENEMY...)
   let sy = 0; // y axis coordinate - source
-  let sWidth = 32; // width of source rect
-  let sHeight = 32; // height of source rect
-  let dx = canvas.width * 0.20; // x axis coord - destination
-  let dy = canvas.height * 0.20; // y axis coord - destination
-  let dWidth = canvas.width * 0.60; // width of destination rect
-  let dHeight = canvas.height * 0.60; // height of destination rect
+  let sWidth = 640; // width of source rect
+  let sHeight = 640; // height of source rect
+  let dx = canvas.width * 0.23; // x axis coord - destination
+  let dy = canvas.height * 0.25; // y axis coord - destination
+  let dWidth = canvas.width * 0.55; // width of destination rect
+  let dHeight = canvas.height * 0.55; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 
