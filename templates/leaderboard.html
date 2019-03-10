@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+  {% if not players: %}
+    No scores recorded.
+  {% endif %}
+  {% for player, collected in players: %}
+    <h3>{{player.name}}</h3> 
+    SCORE: {{player.score}}
+    <br>
+    COLLECTED ITEMS: {{collected}}
+    <br>
+  {% endfor %}
+{% endblock %}

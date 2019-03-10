@@ -333,7 +333,7 @@ const renderPlayer = (x,y) => {
   let dHeight = unitSize; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   if(x == gameData.win_pos[0] && y == gameData.win_pos[1]){
-    if(!gameData['boss_alive']){
+    if(!gameData['boss_alive'] && !gameData['item_collected']){
       collectItem();
     }
   }

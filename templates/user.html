@@ -4,8 +4,9 @@
   {% if not alive_players %}
     {% if not dead_players %}
       <p> You have not created any players. </p>
-    {% endif %}
+    {% else %}
     <p> All your players are dead! </p>
+    {% endif %}
   {% endif %}
   <h2> PLAYERS </h2>
   {% for player in alive_players:%}

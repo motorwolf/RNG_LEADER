@@ -11,5 +11,12 @@
   {% include 'player_data.html'%}
   ALIVE?: <span id="alive"></span><br>
   MUTATION: <span id="mutation"></span><br>
+  <div id="storyBlocks">
+  </div>
   <script src="/static/js/stats.js"></script>
+  <script src="/static/js/playerData.js"></script>
+  <script>
+    getStats({{id}});
+    getStory({{id}});
+  </script>
 {% endblock %}

@@ -92,7 +92,6 @@ def show_user_info(user_id):
             flash("You are not logged in and can't see this page.")
             return redirect("/login")
     else:
-        #TODO: message: you are not logged in.
         flash("You are not logged in.")
         return redirect("/login")
 
@@ -119,7 +118,6 @@ def show_player_info(user_id, player_id):
         #TODO: dump some more player info here!
         return render_template('player.html', name=player.name, collected=named_items, id=player_id) 
     else:
-        #TODO: flash you failed criteria to see this page
         flash("You are not logged in.")
         return redirect('/login') 
 
@@ -197,7 +195,7 @@ def update_game_and_win():
         game.db.session.add(new_player_story)
         game.db.session.commit()
     # TODO LOW: Add story block
-        flash("You have won the game!")
+        flash(f"You returned the item and have have won the game!")
     return jsonify(player_id) 
 
 # @app.route('/congrats')
@@ -288,14 +286,32 @@ def show_gravesite(player_id):
     if player.alive:
         flash("You are still alive!")
         return redirect('/')
-    elif logged_in_and_auth(player.user.user_id):
+    else:
         story = game.Player_Story.query.filter(game.Player_Story.player_id == player_id, game.Player_Story.story_type == 'death').first()
         grave = game.Grave.query.filter(game.Grave.player_id == player_id).one()
         return render_template('grave.html', story=story, grave=grave, player=player, collected=player.collected_items)
 
-
-    
+@app.route('/get_story/<player_id>')
+def return_player_stories(player_id):
+    player = game.Player.query.get(player_id)
+    stories = game.Player_Story.query.filter(game.Player_Story.player_id == player_id).order_by(game.Player_Story.player_story_id).all()
+    story_text = list(map(lambda story: story.story_text, stories));
+    print(story_text)
+    json_stories = {'stories': story_text}
+    return jsonify(json_stories)
     ###### 
+
+@app.route('/graveyard')
+def return_dead_players():
+    graves = game.Grave.query.order_by(game.Grave.time_of_death).all()
+    return render_template('graveyard.html', graves=graves)
+
+@app.route('/leaderboard')
+def return_high_scores():
+    players = game.Player.query.filter(game.Player.score != 0).order_by(game.Player.score.desc()).all()
+    players_items = list(map(lambda player: (player, len(player.collected_items)), players))
+    print(players_items)
+    return render_template('leaderboard.html', players=players_items)
 
 def logged_in_and_auth(id_to_check):
     id_to_check = str(id_to_check)
