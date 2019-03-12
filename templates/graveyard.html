@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
+  <div id="graveyard">
   {% if not graves: %}
     Nobody has died..... yet.
   {% endif %}
   {% for grave in graves: %}
-  <a href="/grave/player/{{grave.player_id}}">Here lies {{grave.player.name}}, killed by {{grave.killer}}</a>
+    <div class="grave">
+      HERE LIES<a href="/grave/player/{{grave.player_id}}">{{grave.player.name}}</a> killed by {{grave.killer}}
+    </div>
   {% endfor %}
+  </div>
 {% endblock %}

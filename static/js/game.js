@@ -479,10 +479,12 @@ const renderEnemy = (spritePos) => {
   let sy = 0; // y axis coordinate - source
   let sWidth = 640; // width of source rect
   let sHeight = 640; // height of source rect
-  let dx = canvas.width * 0.23; // x axis coord - destination
-  let dy = canvas.height * 0.25; // y axis coord - destination
-  let dWidth = canvas.width * 0.55; // width of destination rect
-  let dHeight = canvas.height * 0.55; // height of destination rect
+  let dx = canvas.width * 0.30; // x axis coord - destination
+  let dy = canvas.height * 0.20; // y axis coord - destination
+  let dHeight = canvas.height * 0.60;
+    //canvas.height * 0.55; // height of destination rect
+  
+  let dWidth = dHeight;//canvas.width * 0.55; // width of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 

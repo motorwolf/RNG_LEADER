@@ -3,9 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" src="static/css/normalize.css">
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   <link rel="stylesheet">
   <title>THE GAME</title>
   <style>
+      :root {
+        --hot-pink: #FF54B3;
+        --main-font: 'Press Start 2P';
+      }
+      #container {
+        display: grid;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background-color: black;
+        color: cyan;
+        font-family:'Press Start 2P',sans-serif;
+        line-height: 2;
+        font-size: 20px;
+      }
+      a {
+        color: white;
+      }
+      a:hover {
+        color: var(--hot-pink);
+      }
+      input, select {
+        padding: 1em;
+        background-color: black;
+        color: var(--hot-pink); 
+        font-family: var(--main-font);
+        border: 5px cyan solid;
+        font-size: 1.2em;
+      }
       #statusBox {
         border: solid 4px black;
         background-color: pink;
@@ -25,7 +57,7 @@
         overflow: scroll;
       }
     canvas {
-      border: solid 3px red;
+      border: solid 3px cyan;
     }
     a {
       display: block;
@@ -34,8 +66,15 @@
     input, label, button {
       display: block;
     }
+    nav {
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+    }
     nav li {
-      display: inline-block;
+      padding: 1em;
     }
     #overlay {
       z-index: 1000;
@@ -55,12 +94,65 @@
       width: 200px;
       background-color: orange;
     }
+    #graveyard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background-color: purple;
+    }
+    .grave {
+      background: url('static/grave.png') no-repeat;
+      background-size: 100%;
+      max-width: 320px;
+      max-height: 320px;
+      min-width: 320px;
+      min-height: 320px;
+      color: #555364;
+      font-size: 1.15em;
+      padding: 5em 0 0 3em; 
+      text-align: center;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+    }
+    .grave a {
+      color: #F1F1F1;
+      font-size: 1em;
+    }
+    .flashes {
+      background-color: white;
+      color: black;
+      font-size: 2em;
+      text-align: center;
+      list-style: none;
+    }
+    button {
+      font-family: var(--main-font);
+      background-color: cyan;
+      color: black;
+      padding: 2em 3em;
+      margin: 1em;
+      font-size: 1em;
+      border: none;
+      text-align: center;
+    }
+    button:hover {
+      background-color: var(--hot-pink);
+    }
+    main {
+      padding: 2em;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
+  <div id="container">
   {% include 'nav.html' %}
   {% with messages = get_flashed_messages() %}
-  {% if messages %}
+  <main>
+    {% if messages %}
     <ul class=flashes>
     {% for message in messages %}
       <li>{{ message }}</li>
@@ -71,9 +163,14 @@
   
   {% block content %}
   {% endblock %}
+  </main>
   <div id='overlay'>
     <div id='dialog'>
     </div>
   </div>
+  </div>
+  <footer>
+    &copy; Kristen Payne 2019
+  </footer>
 </body>
 </html>

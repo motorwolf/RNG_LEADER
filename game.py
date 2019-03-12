@@ -106,7 +106,7 @@ class Game(db.Model):
     def assign_map_attributes(self,length,width):
         """ Creates a map, the start position, and the win position, and assigns to self."""
         self.game_map = self.create_map(length,width)
-        self.start_pos = [math.floor((width - 1)/2), 1]
+        self.start_pos = [math.floor((width - 1)/3), 1]
         #self.win_pos =  [5,length - 1]
         self.cur_pos = self.start_pos
 

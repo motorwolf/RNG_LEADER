@@ -2,11 +2,11 @@
   <ul>
     <li><a href="/">HOME</a></li>
     {% if session['logged_in']: %}
-    <li><a href="../logout">LOG OUT</a></li>
+    <li><a href="/logout">LOG OUT</a></li>
     <li><a href="/user/{{ session['user_id'] }}">MY PAGE!</a></li>
     {% elif session['logged_in'] == False %}
-    <li><a href="../signup">SIGN UP</a></li>
-    <li><a href="../login">LOG IN</a></li>
+    <li><a href="/signup">SIGN UP</a></li>
+    <li><a href="/login">LOG IN</a></li>
     {% endif %}
     <li><a href="/leaderboard">LEADERS</a></li>
     <li><a href="/graveyard">GRAVEYARD</a></li>

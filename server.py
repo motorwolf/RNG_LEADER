@@ -140,7 +140,7 @@ def begin_game(player_id):
             new_item = game.Item.query.filter(game.Item.name == "Future Tech").first().item_id
         random_regent = random.choice(game.Regent.query.all()).regent_id
         new_game = game.Game(regent_id=random_regent,item_id=new_item,player_id=player_id,won=False, item_collected=False)
-        new_game.assign_map_attributes(20,20)
+        new_game.assign_map_attributes(16,28)
         game.db.session.add(new_game)
         game.db.session.commit()
         game_attr = new_game.game_attributes()
@@ -296,7 +296,6 @@ def return_player_stories(player_id):
     player = game.Player.query.get(player_id)
     stories = game.Player_Story.query.filter(game.Player_Story.player_id == player_id).order_by(game.Player_Story.player_story_id).all()
     story_text = list(map(lambda story: story.story_text, stories));
-    print(story_text)
     json_stories = {'stories': story_text}
     return jsonify(json_stories)
     ###### 
