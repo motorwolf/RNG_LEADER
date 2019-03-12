@@ -46,7 +46,10 @@ def log_user_out():
 @app.route('/signup')
 def show_signup_form():
     """ Shows the user sign up form. """
-    return render_template('signup.html')
+    if session['user_id'] and session['logged_in'] == True:
+        return redirect(f'/user/{session["user_id"]}')
+    else: 
+        return render_template('signup.html')
 
 @app.route('/signup', methods=["POST"])
 def user_sign_up():
