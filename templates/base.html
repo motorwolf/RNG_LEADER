@@ -5,7 +5,7 @@
   <link rel="stylesheet" src="static/css/normalize.css">
   <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   <link rel="stylesheet">
-  <title>THE GAME</title>
+  <title>RNGLEADER</title>
   <style>
       :root {
         --hot-pink: #FF54B3;
@@ -118,6 +118,11 @@
       color: #F1F1F1;
       font-size: 1em;
     }
+    .graveName {
+      max-height: 4em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .flashes {
       background-color: white;
       color: black;
@@ -145,6 +150,32 @@
     footer {
       text-align: center;
     }
+    #slideContainer {
+      width: 860px;
+      height: 640px;
+      max-height: 640px;
+      background-image: url('static/logo.png');
+      background-repeat: no-repeat;
+    }
+    .blink {
+      text-shadow: 0px 0px 5px rgba(0,0,0,1);
+      position: relative;
+      top: 400px;
+      left: 400px;
+      animation: blink 2s infinite;
+    }
+    .blink:hover {
+      animation: none;
+    }
+    .blink a {
+      font-size: 1.4em;
+    }
+    .blink a:hover {
+      color: cyan;
+    }
+    @keyframes blink {
+      20% {opacity: 0}
+    }
   </style>
 </head>
 <body>
@@ -168,9 +199,9 @@
     <div id='dialog'>
     </div>
   </div>
-  </div>
   <footer>
     &copy; Kristen Payne 2019
   </footer>
+  </div>
 </body>
 </html>

@@ -6,7 +6,11 @@
   {% endif %}
   {% for grave in graves: %}
     <div class="grave">
-      HERE LIES<a href="/grave/player/{{grave.player_id}}">{{grave.player.name}}</a> killed by {{grave.killer}}
+      HERE LIES
+      <span class="graveName">
+        <a href="/grave/player/{{grave.player_id}}">{{grave.player.name}}</a>
+      </span>
+      killed by {{grave.killer}}
     </div>
   {% endfor %}
   </div>
