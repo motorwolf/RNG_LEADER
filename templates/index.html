@@ -4,10 +4,15 @@
 <div id="slideContainer">
   <!-- <img src='static/logo.png' alt="RNG Safari Logo"/> -->
   <div class="blink">
-    <a>SIGN UP</a>
-    <a>LOG IN</a>
+    <a href="/signup">
+      {% if session['logged_in']:%}
+      START THE GAME
+      {% else: %}
+      SIGN UP TO PLAY!
+      {% endif %}
+    </a>
   </div>
 </div>
 
-<h2>COLLECT EVERYTHING TO BECOME THE LEADER!</h2>
+<h2 id="tagline">COLLECT EVERYTHING TO BECOME THE LEADER!</h2>
 {% endblock %}

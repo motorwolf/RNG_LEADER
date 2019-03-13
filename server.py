@@ -43,11 +43,13 @@ def log_user_out():
     session['logged_in'] = False
     flash("You have logged out.")
     return redirect("/")
+
 @app.route('/signup')
 def show_signup_form():
     """ Shows the user sign up form. """
-    if session['user_id'] and session['logged_in'] == True:
-        return redirect(f'/user/{session["user_id"]}')
+    if 'user_id' in session:
+        if session['user_id'] and session['logged_in']:
+            return redirect(f'/user/{session["user_id"]}')
     else: 
         return render_template('signup.html')
 

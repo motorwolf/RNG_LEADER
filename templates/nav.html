@@ -1,6 +1,10 @@
 <nav>
   <ul>
-    <li><a href="/">HOME</a></li>
+    {% if request.path != "/":%}
+      <a href="/">
+        <img src="/static/logo_sm.png" alt="RNG Leader logo">
+      </a>
+    {% endif %}
     {% if session['logged_in']: %}
     <li><a href="/logout">LOG OUT</a></li>
     <li><a href="/user/{{ session['user_id'] }}">MY PAGE!</a></li>
