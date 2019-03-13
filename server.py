@@ -313,9 +313,11 @@ def return_dead_players():
 @app.route('/leaderboard')
 def return_high_scores():
     players = game.Player.query.filter(game.Player.score != 0).order_by(game.Player.score.desc()).all()
-    players_items = list(map(lambda player: (player, len(player.collected_items)), players))
-    print(players_items)
-    return render_template('leaderboard.html', players=players_items)
+    players_and_items = list(map(lambda player: (player, len(player.collected_items)), players))
+    leaders = {}
+    leaders['first'], leaders['second'], leaders['third'] = players_and_items[:3]
+    players_and_items = players_and_items[3:]
+    return render_template('leaderboard.html', players=players_and_items, leaders=leaders)
 
 def logged_in_and_auth(id_to_check):
     id_to_check = str(id_to_check)
