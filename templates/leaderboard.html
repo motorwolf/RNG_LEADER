@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-  {% if not players: %}
+  {% if not leaders:%}
     No scores recorded.
   {% endif %}
+  {% for position in leaders: %}
+    <div id={{position}}>
+      <h3>{{leaders[position][0].name}}</h3>
+      SCORE: {{leaders[position][0].score}}
+      <br>
+      COLLECTED ITEMS: {{leaders[position][1]}}
+    </div>
+  {% endfor %}
   {% for player, collected in players: %}
     <h3>{{player.name}}</h3> 
     SCORE: {{player.score}}
