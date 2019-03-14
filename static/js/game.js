@@ -4,7 +4,8 @@ let gameData = {
 };
 
 const hasRelevantSave = () =>{
-  if(localStorage.savedGame){
+  if(localStorage.savedGame == 'true'){
+    // TODO : Fix this later. Find out why localStorage doesn't save this as a real bool. For now it works....
     const id = document.getElementById('player_id').textContent;
     game_info = JSON.parse(localStorage.gameData);
     if(game_info.player_id == parseInt(id)){
@@ -505,6 +506,7 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
   if(!attackSequence) { run.addEventListener('click', functionList[1]);}
   
   const startAttackSequence = (type, enemy) => {
+    let successfullyRan = false;
     attackSequence = true;
     attack.disabled = true;
     run.disabled = true;
@@ -565,6 +567,7 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
       if(enemyFaster){
         if(diceRoll === 1){
           logToBox("You've run away.");
+          successfullyRan = true;
           gameData.battle = false;
         }
         else{
@@ -579,6 +582,7 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
       else {
         if(diceRoll < 3){
           logToBox("You've run away!");
+          successfullyRan = true;
           gameData.battle = false;
         }
         else{
@@ -602,7 +606,9 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
     run.disabled = false;
     if(!gameData.battle){
       if(bossFlag){
-        gameData['boss_alive'] = false;
+        if(!successfullyRan){
+          gameData['boss_alive'] = false;
+        }
       }
       enemyDialog.style = "display:none";
       renderMap(gameData.terrain);
