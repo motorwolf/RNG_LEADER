@@ -8,12 +8,15 @@
       * {
         box-sizing: border-box;
       }
+      
       body {
         background-color: black;
         color: cyan;
         font-family:'Press Start 2P',sans-serif;
         line-height: 2;
         font-size: 20px;
+        max-width: 1600px;
+        margin: 0 auto;
       }
       a {
         color: white;
@@ -57,7 +60,9 @@
     input, label, button {
       display: block;
     }
+    /* NAV STUFF */
     nav {
+      max-height: 6em;
     }
     nav ul {
       display: flex;
@@ -66,12 +71,20 @@
     }
     nav li {
       padding: 1em;
-      min-width: 9em;
+      max-height: 6em;
+      min-width: 10em;
     }
     nav li:hover{
       background-color: var(--hot-pink);
       color: white;
     }
+    nav a {
+      text-decoration: none;
+    }
+    nav a:hover{
+      color: white;
+    }
+    /* END NAV */
     #overlay {
       z-index: 1000;
       display: none;
@@ -97,7 +110,7 @@
       background-color: purple;
     }
     .grave {
-      background: url('static/grave.png') no-repeat;
+      background: url('../grave.png') no-repeat;
       background-size: 100%;
       max-width: 320px;
       max-height: 320px;
@@ -140,12 +153,15 @@
       background-color: var(--hot-pink);
     }
     main {
-      padding: 2em;
       text-align: center;
     }
     footer {
       text-align: center;
     }
+    
+    
+    /* HOMEPAGE */ 
+    
     #slideContainer {
       margin: 0 auto;
       width: 860px;
@@ -180,3 +196,54 @@
       
     }
 
+    /* USER PAGE */
+    #players {
+      grid-column-start: 1;
+      min-width: 600px;
+    }
+    #newPlayer {
+      grid-column-start: 2;
+    }
+    
+    #grid {
+      display: flex;
+      flex-direction: row;
+      max-width: 1000px;
+      margin: 1em auto;
+    }
+    #createPlayer {
+      background-color: white;
+      color: black;
+      padding: 1em;
+      font-size: 80%;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+    }
+    #createPlayer input, #createPlayer select {
+      font-size: 1em;
+    }
+    /* END USER PAGE */
+  /* LEADERBOARD */
+
+  .placard {
+    background-color: white;
+    color: black;
+    max-width: 500px;
+    padding: 1em;
+    margin: 1em;
+    text-align: left;
+    border: 5px solid cyan;
+  }
+  .placard h3 {
+    font-size: 1.4em;
+    margin: 0;
+  }
+  #first.placard {
+    width: 70%;
+    max-width: none;
+    font-size: 1.4em;
+  }
+  #first.placard h3 {
+    font-size: 1.8em; 
+  }

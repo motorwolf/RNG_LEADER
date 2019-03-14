@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
+  <div id="grid">
+    <div id="players">
   {% if not alive_players %}
     {% if not dead_players %}
       <p> You have not created any players. </p>
@@ -15,7 +17,8 @@
   {% for player in dead_players:%}
     <a href="/grave/player/{{player.player_id}}">{{player.name}}'s grave </a>
   {% endfor %}
-  <br>
+    </div>
+  <div id="newPlayer">
   CREATE NEW PLAYER!
   <form action="/api/create_player" id="createPlayer">
     <label>PLAYER NAME: <input type="text" name="name"></label>
@@ -30,6 +33,7 @@
     </label>
     <button type="submit">CREATE ME</button>
   </form>
-  <br>
+  </div>
   <script src="/static/js/createPlayer.js"></script>
+  </div>
 {% endblock %}

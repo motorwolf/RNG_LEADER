@@ -4,7 +4,7 @@
     No scores recorded.
   {% endif %}
   {% for position in leaders: %}
-    <div id={{position}}>
+    <div id={{position}} class="placard">
       <h3>{{leaders[position][0].name}}</h3>
       SCORE: {{leaders[position][0].score}}
       <br>
@@ -12,10 +12,11 @@
     </div>
   {% endfor %}
   {% for player, collected in players: %}
-    <h3>{{player.name}}</h3> 
-    SCORE: {{player.score}}
-    <br>
-    COLLECTED ITEMS: {{collected}}
-    <br>
+    <div class="placard">
+      <h3>{{player.name}}</h3> 
+      SCORE: {{player.score}}
+      <br>
+      COLLECTED ITEMS: {{collected}}
+    </div>
   {% endfor %}
 {% endblock %}
