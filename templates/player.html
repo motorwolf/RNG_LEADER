@@ -1,18 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
-  NAME ::: {{ name }}
-  {% if not collected %}
-  <p> You haven't collected anything yet! </p>
-  {% endif %}
-  {% for item in collected: %}
-      <h2> {{ item }} </h2>
-  {% endfor %}
-  <a href="{{ id }}/game">LAUNCH GAME</a>
-  {% include 'player_data.html'%}
-  ALIVE?: <span id="alive"></span><br>
-  MUTATION: <span id="mutation"></span><br>
-  <div id="storyBlocks">
-  </div>
+<div id="wrapper">
+    <div id="playerData">
+      {% include 'player_data.html'%}
+      <span id="alive" class="hideme"></span>
+      <span id="mutation" class="hideme"></span>
+    </div>
+    <div id="launchBox">
+      <a href="{{id}}/game">
+        <button>LAUNCH GAME</button>
+      </a>
+    </div>
+</div>
+<div id="collectionBox">
+    <h3>YOUR COLLECTED ITEMS:</h3>
+    {% if not collected %}
+    <p>You haven't collected anything yet! </p>
+    {% endif %}
+    {% for item in collected: %}
+      <div class="">
+        <h3> {{ item.upper() }} </h3>
+        <p>{{ item.description }}</p>
+      </div>
+    {% endfor %}
+</div>
+<div id="storyBlocks">
+</div>
   <script src="/static/js/stats.js"></script>
   <script src="/static/js/playerData.js"></script>
   <script>

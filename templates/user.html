@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div id="grid">
+  <div id="wrapper">
     <div id="players">
   {% if not alive_players %}
     {% if not dead_players %}
@@ -18,8 +18,8 @@
     <a href="/grave/player/{{player.player_id}}">{{player.name}}'s grave </a>
   {% endfor %}
     </div>
-  <div id="newPlayer">
-  CREATE NEW PLAYER!
+    <div id="newPlayer">
+  <h2>CREATE NEW PLAYER</h2>
   <form action="/api/create_player" id="createPlayer">
     <label>PLAYER NAME: <input type="text" name="name"></label>
     <label>PLAYER TYPE: 
