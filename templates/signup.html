@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<form action="/signup" method="POST">
+<form action="/signup" method="POST" id="signup">
   <label for="">USER NAME: <input type="text" name="name"></label>
   <label for="">EMAIL: <input type="email" name="email"></label>
-  <label for="">PASSWORD: (STORED IN PLAIN TEXT)<input type="password" name="pass"></label>
+  <label for="">PASSWORD: <input type="password" name="pass"></label>
+  PLEASE NOTE: passwords stored in plain text!
   <button type="submit">SUBMIT</button>
 </form>
 

@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+  <div id="wrapperColumn">
   {% if not leaders:%}
     No scores recorded.
   {% endif %}
+  <div id="topThree">
   {% for position in leaders: %}
+    <h2> {{position.upper()}} PLACE </h2>
     <div id={{position}} class="placard">
       <h3>{{leaders[position][0].name}}</h3>
       SCORE: {{leaders[position][0].score}}
@@ -11,6 +14,8 @@
       COLLECTED ITEMS: {{leaders[position][1]}}
     </div>
   {% endfor %}
+  </div>
+  <div id="others">
   {% for player, collected in players: %}
     <div class="placard">
       <h3>{{player.name}}</h3> 
@@ -19,4 +24,6 @@
       COLLECTED ITEMS: {{collected}}
     </div>
   {% endfor %}
-{% endblock %}
+  </div>
+  </div>
+  {% endblock %}

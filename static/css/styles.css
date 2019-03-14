@@ -33,26 +33,13 @@
         font-size: 1.2em;
       }
       #statusBox {
-        border: solid 4px black;
+        border: solid 5px black;
         background-color: pink;
         color: black;
         width: 40%;
         min-width: 200px;
         min-height: 200px;
       }
-      #textBox {
-        border: solid 4px black;
-        background-color: #4499FF;
-        color: #FFFFFF;
-        width: 70%;
-        min-width: 500px;
-        height: 200px;
-        max-height: 200px;
-        overflow: scroll;
-      }
-    canvas {
-      border: solid 3px cyan;
-    }
     a {
       display: block;
       font-size: 20px;
@@ -209,6 +196,19 @@
       
     }
 
+    /* SIGNUP AND LOGIN */
+
+    #signup, #login {
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      align-items: center;
+    }
+    #signup input, #signup button, #login input, #login button {
+      margin: 1.10em 0px;
+    }
+
     /* USER PAGE */
     #players {
       text-align: left;
@@ -245,7 +245,6 @@
       height: 75px;
       padding: 0;
     }
-    /* END USER PAGE */
   
     /* PLAYER PAGE */
     
@@ -269,10 +268,13 @@
       margin: 2em;
     }
 
-    /* END PLAYER PAGE*/
-
     /* LEADERBOARD */
-
+  #wrapperColumn {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    margin: 1em auto;
+  }
   .placard {
     background-color: white;
     color: black;
@@ -283,14 +285,74 @@
     border: 5px solid cyan;
   }
   .placard h3 {
-    font-size: 1.4em;
+    font-size: 1em;
     margin: 0;
   }
   #first.placard {
-    width: 70%;
+    width: 100%;
     max-width: none;
     font-size: 1.4em;
   }
   #first.placard h3 {
     font-size: 1.8em; 
   }
+  #second, 
+  #third {
+    width: 100%;
+    max-width: none;
+  }
+  #second h3, #third h3 {
+    font-size: 1.35em;
+  }
+  #topThree {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  #topThree h2 {
+    margin-bottom: 0;
+  }
+  #others {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  /* GAME BOARD */
+  #mapbox {
+    display: flex;
+    flex-direction: row;
+  }
+  #playerDataGame.stats {
+    display: flex;
+    flex-direction: row;
+    font-size: 1em;
+  }
+  #playerDataGame h2 {
+    font-size: 1.15em;
+    margin: 0;
+  }
+  #gameContainer {
+    max-width: 1600px;
+    overflow: scroll;
+    border: 5px solid cyan;
+  }
+
+      #textBox {
+        border: solid 5px var(--hot-pink);
+        background-color: black;
+        color: #FFFFFF;
+        line-height: 0.85;
+        overflow: scroll;
+        font-size: 0.85em;
+        max-width: 540px;
+      }
+    #enemyDialog {
+      max-width: 300px;
+      display: flex;
+    }
+    #enemyDialog button {
+      max-width: 200px;
+      padding: 1em;
+      justify-content: space-between;
+    }

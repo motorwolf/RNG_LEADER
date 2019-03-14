@@ -1,39 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
-  <header>
-  </header>
-  <main>
-    <div id="mapbox">
-      <span id="player_id" style="display:none;">{{ player_id }}</span>
-      <div id="playerDataGame">
+      <button id="game">START THE GAME!</button>
+      <div id="veil" class="hideme">
+      <div id="playerDataGame" >
         <h2><span id="name"></span></h2>
+        <div class="stats">
         LEVEL:<span id="level"></span>&nbsp;EXP:<span id="exp"></span>
-        <br>
         SCORE:<span id="score"></span>
-        <br>
         HP:<span id="stat_hp"></span>/<span id="stat_hp_max"></span>
-        <br>
         STR:<span id="stat_str"></span>&nbsp;DEX:<span id="stat_dex"></span>&nbsp;INT:<span id="stat_int"></span>&nbsp;CHA:<span id="stat_cha"></span>
-        <br>
         ARMOR:<span id="stat_arm"></span>&nbsp;WEAPON:<span id="stat_weap"></span>
-
       </div>
-      <div id="textBox"></div>
+      </div>
+        <div id="mapbox">
+      <span id="player_id" style="display:none;">{{ player_id }}</span>
+      <div id="gameContainer">
+      <canvas id="canvas" width="600" height="400"></canvas>
+      </div>
       <div id="enemyDialog" style="display:none;">
         <button id="attack">ATTACK!</button>
         <button id="run">RUN AWAY</button>
       </div>
-      <button id="game">START THE GAME!</button>
-      <canvas id="canvas" width="600" height="400"></canvas>
+      <div id="textBox">
+      </div>
       <!-- <img src="/static/tiles.png"/> -->
-      <div id="gameData">
+      <div id="gameData" class="hideme">
         <h2>NAME:<span id="name"></span></h2>
         <h2>MUTATION:<span id="mutation"></span></h2>
         <h2>REGENT: <span id="regent"></span></h2>
         <h2>STATUS: <span id="alive"></span></h2>
       </div> 
     </div>
-<div style="display:none;">
+    </div>
+  <div class="hideme"> 
   <img id="sprites"
        src="/static/demo_tiles.PNG">
   <img id="terrain" src="/static/terrain.png">
@@ -41,8 +40,6 @@
   <img id="enemies" src="/static/enemies.png">
   <img id="background" src="/static/background.png">
 </div>
-  </main>
   <script src="/static/js/stats.js"></script>
   <script src="/static/js/game.js"></script>
-</body>
-{% endblock %}
+  {% endblock %}
