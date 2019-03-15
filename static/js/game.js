@@ -273,7 +273,7 @@ const renderMap = (coords) => {
   //const height = document.documentElement.clientHeight; =>>> this could be one day used to responsively output block size!
   // could this function actually call the other function? That way we could pass it unitSize rather than redeclaring it.
   const spriteSheet = document.querySelector('#terrain');
-  const unitSize = 48; // icon size, in pixels
+  const unitSize = 64; // icon size, in pixels
   sizeCanvas(unitSize,coords[0].length,coords.length);
 
   let sx = 0; // x axis coordinate - source
@@ -495,11 +495,11 @@ const renderEnemy = (spritePos) => {
 
 
 const startBattle = (enemyData, hero, bossFlag = false) => {
-  console.log(enemyData);
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
   logToBox(`A ${enemy.name.toUpperCase()} draws near.`);
+  logToBox(`${hero.name}'s compendium reads: ${enemy.desc}`);
   renderEnemyDialog();
   renderEnemy(enemyData.sprite_pos);
   enemyDialog.style = 'display:block';
