@@ -200,6 +200,8 @@ const collectItem = () => {
 }
 
 const startNewGame = () => {
+  const veil = document.getElementById('veil');
+  veil.classList.remove('hideme');
   gameData['active_game'] = true;
   gameData['item_collected'] = false;
   gameData['turn_count'] = 0;
@@ -217,6 +219,8 @@ const startNewGame = () => {
 }
 
 const startGame = () => {
+  const veil = document.getElementById('veil');
+  veil.classList.remove('hideme');
   getStats(gameData['player_id']);
   gameData.hero = new Hero(gameData);
   logToBox("You return to your game...");
