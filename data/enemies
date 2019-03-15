@@ -1,5 +1,16 @@
 #name#level#exp.points#str#dex#arm#weap#hp#hpmax#spritepos#desc
-Slime|1|5|1|1|1|1|5|5|160|A slime.
-Mean Toast|1|10|3|1|1|2|10|10|160|An irascible sandwich type.
-Tsetse Fly|1|2|2|1|1|2|3|3|160|
-Mr. Bad|99|100|10|6|10|3|60|60|160|Mr. Bad needs no description.
+Ichabod Crane|99|100|10|6|10|3|60|60|0|This Crane Melon sits in the arms of a creepy horseman.
+Sadwich|1|5|5|1|2|7|25|25|640|This sandwich instead eats you.
+Squash Bug|10|10|2|1|1|2|15|15|1280|Won't be easily squashed.
+Red Slime|1|5|2|1|1|2|3|3|1920|Translucent red slime.
+Stack Attack|1|15|2|1|1|2|15|15|2560|A data structure
+Blue Slime|1|5|2|1|1|1|15|15|3200|Translucent blue slime.
+Tentacles|1|5|2|1|1|2|15|15|3840|This melon is some horrible hybrid.
+Fanged Melon|1|10|2|1|1|2|15|15|4480|It's seedless, but not fangless.
+Winter Melon|1|10|2|1|1|2|15|15|5120|It's bundled for the winter.
+Aggro Chairy|1|10|2|1|1|2|15|15|5760|This couch is no slouch.
+Rattler|1|15|2|1|1|2|15|15|6400|The gaze is poisonous.
+Crenshaw|1|10|2|1|1|2|15|15|7040|This one is not welcome at brunch.
+Casaba|1|15|2|1|1|2|15|15|7680|Watch out for the fangs.
+Kabocha|1|15|2|1|1|2|15|15|8320|Cut it up and put it in a curry.
+Cube|1|5|2|1|1|2|15|15|8960|Careful! It will subsume and slowly digest you!
