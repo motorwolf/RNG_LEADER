@@ -342,10 +342,14 @@
         border: solid 5px var(--hot-pink);
         background-color: black;
         color: #FFFFFF;
-        line-height: 0.85;
+        line-height: 0.95;
         overflow: scroll;
-        font-size: 0.85em;
+        font-size: 0.75em;
         max-width: 540px;
+        height: 610px;
+        max-height: 610px;
+        text-align: left;
+        padding: 0 1em;
       }
     #enemyDialog {
       max-width: 300px;
