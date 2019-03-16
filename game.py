@@ -125,6 +125,7 @@ class Game(db.Model):
                 "stats": self.player.stats,
                 "player_level": self.player.level,
                 "player_class": self.player.p_class.name,
+                "player_sprite": self.player.p_class.sprite_pos,
                 }
         def int_lst_to_str(lst):
             """ Utility to convert a list of numbers to a joined string"""
@@ -268,7 +269,7 @@ class Story_Block(db.Model):
         def is_string_one_word(string):
             if len(string.split(" ")) == 1:
                 dictionary_value = game_dict.get(string,string)
-                return dictionary_value
+                return dictionary_value.upper()
             else:
                 return string
 

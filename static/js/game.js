@@ -66,10 +66,44 @@ gameInitButton.addEventListener('click', (e) => {
   gameInitButton.style = 'display:none';
 });
 
-const logToBox = (html) => {
+const logToBox = (html,vip=false) => {
   const textBox = document.getElementById('textBox');
-  textBox.innerHTML = textBox.innerHTML.concat(`<p>${html}<p>`);
+  if(!vip){
+    textBox.innerHTML = textBox.innerHTML.concat(`<p>${html}<p>`);
+  }
+  if(vip){
+    textBox.innerHTML = textBox.innerHTML.concat(`<p style="color:cyan">${html}</p>`);
+  }
   textBox.scrollTop = textBox.scrollHeight;
+}
+
+const updateWindowPosition = (coords,condition) => {
+  const gameWindow = document.getElementById('gameContainer');
+  const blockSize = 64;
+  
+  if(condition == "battle"){
+    const scrollX = "0";
+    const scrollY = "96";
+    
+    gameWindow.scrollLeft = scrollX;
+    gameWindow.scrollTop = scrollY;
+  }
+  if(condition == "center"){
+    const scrollX = (coords[0] * blockSize) -(blockSize * 6);
+    const scrollY = (coords[1] * blockSize) -(blockSize * 6);
+  
+    gameWindow.scrollLeft = scrollX;
+    gameWindow.scrollTop = scrollY;
+  }
+  if(condition == "movedX"){
+    const scrollX = (coords[0] * blockSize) - (blockSize * 6);
+    gameWindow.scrollLeft = scrollX;
+  }
+
+  if(condition == "movedY"){
+    const scrollY = (coords[1] * blockSize) - (blockSize * 6);
+    gameWindow.scrollTop = scrollY;
+  }
 }
 
 const outputPlayerStatus = (gameData) => {
@@ -89,9 +123,19 @@ const isBattleTime = (percent) => {
   }
 }
 
+
+
 const movePlayer = (dir,currentPosition) => {
   // Interprets player direction, renders map, renders the starting position sprite, updates the player position and renders the player sprite.
   gameData['turn_count']++;
+  if(gameData['turn_count'] % 5 == 0){
+    if(dir == 'left' || dir == 'right'){
+      updateWindowPosition(gameData.cur_pos, 'movedX');
+    }
+    if(dir == 'up' || dir == 'down'){
+      updateWindowPosition(gameData.cur_pos, 'movedY');
+    }
+  }
   const directions = {
     "down": {"axis": 1,"delta": 1},
     "up": {"axis": 1,"delta":-1},
@@ -183,7 +227,7 @@ const getEnemy = (level) => {
 
 const collectItem = () => {
     if(!gameData['boss_alive']){
-      logToBox(`<p>HOORAY! YOU HAVE COLLECTED ${gameData.item}!</p>`);
+      logToBox(`HOORAY! YOU HAVE COLLECTED ${gameData.item}!`,true);
       const id = document.getElementById('player_id').textContent;
       fetch(`/api/${id}/item_collected`, {
         method: 'POST',
@@ -215,10 +259,13 @@ const startNewGame = () => {
   renderStartPos(gameData.start_pos);
   renderPlayer(gameData.start_pos[0],gameData.start_pos[1]);
   gameData['cur_pos'] = [...gameData.start_pos];
+  updateWindowPosition(gameData.cur_pos,'center');
   storeGame(gameData);
 }
 
 const startGame = () => {
+
+  updateWindowPosition(gameData.cur_pos,'center');
   const veil = document.getElementById('veil');
   veil.classList.remove('hideme');
   getStats(gameData['player_id']);
@@ -278,8 +325,8 @@ const renderMap = (coords) => {
 
   let sx = 0; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
-  let sWidth = 32; // width of source rect
-  let sHeight = 32; // height of source rect
+  let sWidth = 64; // width of source rect
+  let sHeight = 64; // height of source rect
   let dx = 0; // x axis coord - destination
   let dy = 0; // y axis coord - destination
   let dWidth = unitSize; // width of destination rect
@@ -291,9 +338,9 @@ const renderMap = (coords) => {
   };
   const terrainCoords = {
     // x,y
-    'trees': [64,0],
-    'grass': [32,0],
-    'desert': [96,0],
+    'trees': [192,0],
+    'grass': [0,0],
+    'desert': [64,0],
   }
   for(let r = 0; r < coords.length; r++){
     for(let c = 0; c < coords[r].length; c++){
@@ -315,11 +362,11 @@ const renderStartPos = (coord) => {
   const spriteSheet = document.querySelector('#terrain');
   const x = coord[0]; 
   const y = coord[1];
-  const unitSize = 48; // unit size should be more global........ ugh
-  let sx = 0; // x axis coordinate - source
+  const unitSize = 64; // unit size should be more global........ ugh
+  let sx = 128; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
-  let sWidth = 32; // width of source rect
-  let sHeight = 32; // height of source rect
+  let sWidth = 64; // width of source rect
+  let sHeight = 64; // height of source rect
   let dx = x * unitSize; // x axis coord - destination
   let dy = y * unitSize; // y axis coord - destination
   let dWidth = unitSize; // width of destination rect
@@ -331,8 +378,8 @@ const renderPlayer = (x,y) => {
   
 
   const spriteSheet = document.querySelector('#players');
-  const unitSize = 48;
-  let sx = 0; // x axis coordinate - source
+  const unitSize = 64;
+  let sx = gameData.player_sprite; // x axis coordinate - source
   let sy = 0; // y axis coordinate - source
   let sWidth = 383; // width of source rect
   let sHeight = 383; // height of source rect
@@ -361,7 +408,7 @@ const updateExperience = (player_id,enemy_exp) => {
   .then(response => response.json())
   .then(response => {
     if(response['updated']){
-      logToBox(`YOU HAVE ADVANCED TO LEVEL ${response.level}!! YOUR STATS HAVE GONE UP!`);
+      logToBox(`YOU HAVE ADVANCED TO LEVEL ${response.level}!! YOUR STATS HAVE GONE UP!`,true);
       for(stat in gameData.hero.stats){
         // TODO LOW: it might be nice to spell out STRENGTH, DEXTERITY, etc, rather than using the abbrs.
         const difference = response.stats[stat] - gameData.hero.stats[stat];
@@ -469,10 +516,10 @@ const renderEnemyDialog = () => {
   let sy = 0; // y axis coordinate - source
   let sWidth = 448; // width of source rect
   let sHeight = 448; // height of source rect
-  let dx = canvas.width * 0.15; // x axis coord - destination
-  let dy = canvas.height * 0.15; // y axis coord - destination
-  let dWidth = canvas.width * 0.70; // width of destination rect
-  let dHeight = canvas.height * 0.70; // height of destination rect
+  let dx = 0; // x axis coord - destination
+  let dy = 0; // y axis coord - destination
+  let dWidth = 960; // width of destination rect
+  let dHeight = 900; // height of destination rect
   ctx.drawImage(spriteSheet, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   const enemyDialog = document.getElementById("enemyDialog");
   enemyDialog.style = "display:block";
@@ -484,9 +531,9 @@ const renderEnemy = (spritePos) => {
   let sy = 0; // y axis coordinate - source
   let sWidth = 640; // width of source rect
   let sHeight = 640; // height of source rect
-  let dx = canvas.width * 0.30; // x axis coord - destination
-  let dy = canvas.height * 0.20; // y axis coord - destination
-  let dHeight = canvas.height * 0.60;
+  let dx = 180; // x axis coord - destination
+  let dy = 200; // y axis coord - destination
+  let dHeight = 600;
     //canvas.height * 0.55; // height of destination rect
   
   let dWidth = dHeight;//canvas.width * 0.55; // width of destination rect
@@ -495,6 +542,7 @@ const renderEnemy = (spritePos) => {
 
 
 const startBattle = (enemyData, hero, bossFlag = false) => {
+  updateWindowPosition([0,3],'battle');
   let attackSequence = false;
   gameData.battle = true;
   const enemy = new Enemy(enemyData);
@@ -554,7 +602,7 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
       }
       if(!enemy.alive){
         //debugger;
-        logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`);
+        logToBox(`YOU HAVE DEFEATED THE ${enemy.name.toUpperCase()}!`,true);
         gameData.battle = false;
         // TODO: Something should happen here.
       }
@@ -620,6 +668,8 @@ const startBattle = (enemyData, hero, bossFlag = false) => {
       renderPlayer(gameData.cur_pos[0],gameData.cur_pos[1]);
       attack.removeEventListener('click', functionList[0]);
       run.removeEventListener('click', functionList[1]);
+
+      updateWindowPosition(gameData.cur_pos,'center');
       storeGame(gameData);
     }
   }

@@ -119,7 +119,7 @@ def show_player_info(user_id, player_id):
         player = game.Player.query.get(player_id) # this should not fail because if your session id has been assigned an id, you exist.
         collected_items = game.Collected_Item.query.filter(game.Collected_Item.player_id == player_id).all()
         
-        named_items = [item.item.name for item in collected_items]
+        named_items = [(item.item.name, item.item.description) for item in collected_items]
         #TODO: dump some more player info here!
         return render_template('player.html', name=player.name, collected=named_items, id=player_id) 
     else:

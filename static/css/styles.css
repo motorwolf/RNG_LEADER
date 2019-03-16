@@ -134,9 +134,10 @@
     .flashes {
       background-color: white;
       color: black;
-      font-size: 2em;
       text-align: center;
       list-style: none;
+      margin: 0 auto;
+      max-width: 900px;
     }
     button {
       font-family: var(--main-font);
@@ -268,6 +269,19 @@
       margin: 2em;
     }
 
+    #collectionBox p {
+      color: white;
+    }
+    h3.collection {
+      color: white;
+      margin-top: 2em;
+    }
+    #storyBlocks {
+      color: white;
+      text-align: left;
+    }
+
+
     /* LEADERBOARD */
   #wrapperColumn {
     display: flex;
@@ -319,6 +333,16 @@
   }
 
   /* GAME BOARD */
+  button#game {
+    font-size: 1.80em;
+    width: 700px;
+    margin: 0 auto;
+    padding: 1em;
+  }
+  #playerDataGame span#name {
+    font-size: larger;
+    color: white;
+  }
   #mapbox {
     display: flex;
     flex-direction: row;
@@ -333,9 +357,13 @@
     margin: 0;
   }
   #gameContainer {
-    max-width: 1600px;
+    max-width: 1000px;
+    max-height: 800px;
     overflow: scroll;
     border: 5px solid cyan;
+  }
+  #veil {
+    margin-top: -1em;
   }
 
       #textBox {

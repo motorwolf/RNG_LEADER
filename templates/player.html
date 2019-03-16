@@ -17,13 +17,15 @@
     {% if not collected %}
     <p>You haven't collected anything yet! </p>
     {% endif %}
-    {% for item in collected: %}
-      <div class="">
-        <h3> {{ item.upper() }} </h3>
-        <p>{{ item.description }}</p>
+    {% for item_name, desc in collected: %}
+      <div>
+        <h2> {{ item_name.upper() }} </h2>
+        <p>{{ desc }}</p>
       </div>
     {% endfor %}
 </div>
+
+<h3 class="collection">YOUR STORY:</h3>
 <div id="storyBlocks">
 </div>
   <script src="/static/js/stats.js"></script>
