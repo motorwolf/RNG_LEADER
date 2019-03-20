@@ -328,7 +328,7 @@ def logged_in_and_auth(id_to_check):
 
 if __name__ == '__main__':
     game.connect_to_db(app)
-    app.debug=True
+    #app.debug=True
     # Debug Toolbar!
-    DebugToolbarExtension(app)
+    #DebugToolbarExtension(app)
     app.run(port=5000, host='0.0.0.0')
