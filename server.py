@@ -1,7 +1,6 @@
 import json, pdb, game, os, hashlib, random
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, jsonify, session, flash
-from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
