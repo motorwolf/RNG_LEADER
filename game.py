@@ -337,7 +337,7 @@ def connect_to_db(app):
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     #'postgresql:///game'
-    #app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app 
     db.init_app(app)
 
@@ -348,6 +348,7 @@ if __name__ == '__main__':
     from server import app
     connect_to_db(app)
     print("Connected to DB")
+    app.run(port=5000, host='0.0.0.0')
 
 ### BEGIN OLD GAME FILE
 
