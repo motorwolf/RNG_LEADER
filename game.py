@@ -1,7 +1,7 @@
 #import random
 #import math
 ### BEGIN MODEL FILE IMPORT
-import random, math, re 
+import random, math, re, os 
 from flask_sqlalchemy import SQLAlchemy, orm
 
 db = SQLAlchemy()
