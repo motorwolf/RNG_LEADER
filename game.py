@@ -335,7 +335,8 @@ def connect_to_db(app):
     """ Connect the database to our Flask app. """
     # config to use postgreSQL
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///game'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+    #'postgresql:///game'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app 
     db.init_app(app)
