@@ -331,9 +331,8 @@ def connect_to_db(app):
     db.app = app
     db.init_app(app)
 
-if __name__ == '__main__':
-    connect_to_db(app)
+connect_to_db(app)
     #app.debug=True
     # Debug Toolbar!
     #DebugToolbarExtension(app)
-    app.run(port=5000, host='0.0.0.0')
+app.run(port=5000, host='0.0.0.0')
