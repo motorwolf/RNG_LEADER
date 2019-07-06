@@ -4,6 +4,8 @@
 import random, math, re, os 
 from flask_sqlalchemy import SQLAlchemy, orm
 
+
+app = Flask(__name__)
 db = SQLAlchemy()
 # creates our db model
 
@@ -346,7 +348,6 @@ if __name__ == '__main__':
 
     # this just allows us to access the app and interact with the database.
 
-    app = Flask(__name__)
     app.secret_key = os.environ.get("SECRET_KEY")
     connect_to_db(app)
     print("Connected to DB")
