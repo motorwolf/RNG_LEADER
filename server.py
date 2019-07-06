@@ -331,7 +331,7 @@ def connect_to_db(app):
     db.init_app(app)
 
 if __name__ == '__main__':
-    game.connect_to_db(app)
+    connect_to_db(app)
     #app.debug=True
     # Debug Toolbar!
     #DebugToolbarExtension(app)
