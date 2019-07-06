@@ -1,11 +1,13 @@
 #import random
 #import math
 ### BEGIN MODEL FILE IMPORT
-import random, math, re, os 
+import random, math, re, os
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy, orm
 
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 db = SQLAlchemy()
 # creates our db model
 
@@ -348,7 +350,6 @@ if __name__ == '__main__':
 
     # this just allows us to access the app and interact with the database.
 
-    app.secret_key = os.environ.get("SECRET_KEY")
     connect_to_db(app)
     print("Connected to DB")
     app.run(port=5000, host='0.0.0.0')
