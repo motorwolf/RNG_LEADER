@@ -346,7 +346,8 @@ if __name__ == '__main__':
 
     # this just allows us to access the app and interact with the database.
 
-    from server import app
+    app = Flask(__name__)
+    app.secret_key = os.environ.get("SECRET_KEY")
     connect_to_db(app)
     print("Connected to DB")
     app.run(port=5000, host='0.0.0.0')
