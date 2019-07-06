@@ -2,8 +2,8 @@ import json, pdb, game, os, hashlib, random
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, jsonify, session, flash
 
-#app = Flask(__name__)
-#app.secret_key = os.environ.get("SECRET_KEY")
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 
 @app.route('/')
 def show_index():
@@ -325,9 +325,14 @@ def logged_in_and_auth(id_to_check):
     else:
         return False
 
-#if __name__ == '__main__':
-#    game.connect_to_db(app)
+def connect_to_db(app):
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+    db.app = app
+    db.init_app(app)
+
+if __name__ == '__main__':
+    game.connect_to_db(app)
     #app.debug=True
     # Debug Toolbar!
     #DebugToolbarExtension(app)
-#    app.run(port=5000, host='0.0.0.0')
+    app.run(port=5000, host='0.0.0.0')

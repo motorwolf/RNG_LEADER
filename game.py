@@ -335,24 +335,24 @@ class Grave(db.Model):
 
     player = db.relationship('Player', backref=db.backref('grave'))
 
-def connect_to_db(app):
+# def connect_to_db(app):
     """ Connect the database to our Flask app. """
     # config to use postgreSQL
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+    #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     #'postgresql:///game'
     #track_modifications = app.config['SQLALCHEMY_TRACK_MODIFICATIONS']
     #app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-    db.app = app 
-    db.init_app(app)
+    #db.app = app 
+    #db.init_app(app)
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
     # this just allows us to access the app and interact with the database.
 
-    connect_to_db(app)
-    print("Connected to DB")
-    app.run(port=5000, host='0.0.0.0')
+    #connect_to_db(app)
+    #print("Connected to DB")
+    #app.run(port=5000, host='0.0.0.0')
 
 ### BEGIN OLD GAME FILE
 
