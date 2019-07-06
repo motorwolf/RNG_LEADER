@@ -1,2 +1,1 @@
-web: gunicorn server:app
-worker: python seed.py
+web: gunicorn game:app
